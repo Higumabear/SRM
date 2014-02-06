@@ -20,32 +20,39 @@ using namespace std;
 static const double EPS = 1e-8;
 #define ALL(c) (c).begin(), (c).end()
 typedef long long ll;
-static const ll INF= 1LL << 60;
+static const ll INF= 1LL << 50;
 
 ll dp[1 << 16];
 
 class SquaresCovering {
 public:
   int minCost(vector <int> x, vector <int> y, vector <int> cost, vector <int> sides) {
-    int N = x.size();
-    fill(dp, dp + (1 << N), INF);
-    for(int S = 0; S < 1 << N; S++){
-      ll x1 = INF, x2 = -INF, y1 = INF, y2 = -INF;
-      for(int i = 0; i < N; i++)
-	if(S >> i & 1){
-	  x1 = min(x1, (ll)x[i]); x2 = max(x2, (ll)x[i]);
-	  y1 = min(y1, (ll)y[i]); y2 = max(y2, (ll)y[i]);
+    int result;
+    fill(dp, dp + (1 << 16), INF);
+    dp[0] = 0;
+    int N = cost.size();
+    int M = x.size();
+    for(int S = 0; S < 1 << M; S++){
+      ll minx = INF, maxx = -1, miny = INF, maxy = -1;
+      for(int j = 0; j < M; j++){
+	if(S >> j & 1){
+	  minx = min(minx, (ll)x[j]);
+	  maxx = max(maxx, (ll)x[j]);
+	  miny = min(miny, (ll)y[j]);
+	  maxy = max(maxy, (ll)y[j]);
 	}
-      
-      ll d = max(x2 - x1, y2 - y1);
-      for(int i = 0; i < (int)cost.size(); i++)
-	if(sides[i] >= d) dp[S] = min(dp[S], (ll)cost[i]);
-      
-      for(int sub = S; sub > 0; sub = (sub - 1) & S)
-	dp[S] = min(dp[S], dp[sub] + dp[S ^ sub]);
-    }  
-    
-    return dp[(1 << N) - 1];
+      }
+      for(int i = 0; i < N; i++)
+	if(sides[i] >= maxx - minx && sides[i] >= maxy - miny)
+	  dp[S] = min(dp[S], (ll)cost[i]);
+    }
+
+    for(int i = 0; i < 1 << M; i++){
+      for(int j = i; j > 0; --j &= i){
+	dp[i] = min(dp[i], dp[j] + dp[i ^ j]);
+      }
+    }
+    return dp[(1 << M) - 1];
   }
   
 // BEGIN CUT HERE
