@@ -2,3 +2,5 @@ SRM
 ===
 
 Single Round Match Archives
+
+SRM‚É‚Ä‰ð‚¢‚½–â‘è‚ðŒöŠJ‚·‚é
