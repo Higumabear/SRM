@@ -24,38 +24,55 @@ typedef long long ll;
 
 class BestApproximationDiv2 {
 public:
-  string div50(int a, int b){ /* a / b */
-    string ret;
-    int t = a;
-    for(int i = 0; i < 51; i++){
-      if(i == 0) ret += "0.";
-      else{
-	t *= 10;
-	ret += (t / b + '0');
-	t %= b; 
-      }
+  double stoi(string s){
+    stringstream ss;
+    ss << s;
+    double a;
+    ss >> a;
+    return a;
+  }
+
+  /* int to string */
+  string itos(int a){
+    stringstream ss;
+    ss << a;
+    return ss.str();
+  }
+
+  char strA[60];
+
+  void divStr(ll a, ll b, int n){
+    int i;
+    for(i = 0; i < n ; i++){
+      strA[i] = '0' + a / b;
+      a %= b;
+      a *= 10;
     }
-    return ret;
+    strA[i] = '\0';
+    return;
   }
   string findFraction(int maxDen, string number) {
     string result;
-    int nu, de;
-    int l = 0;
-
-    for(int i = 1; i <= maxDen; i++){
-      for(int j = 0; j < maxDen; j++){
-	int k;
-	string d = div50(j, i);
-	for(k = 0; k < (int)number.length(); k++)
-	  if(number[k] != d[k]) break;
+    double C = stoi(number);
+    string num;
+    for(int i = 0; i < (int)number.length(); i++) 
+      if(number[i] != '.') num += number[i];
+    
+    int coins = 0;
+    for(ll B = 1; B <= maxDen; B++){
+      ll tmp = B * C;
+      for(ll candA = max(0LL, tmp - 2); candA <= tmp + 2 && candA < B; candA++){
+	int cnt = 0;
+	divStr(candA, B, 50);
+	for(; cnt < (int)num.length() && strA[cnt] != '\0' && num[cnt] == strA[cnt]; cnt++);
 	
-	if(l < k){
-	  l = k;
-	  nu = j; de = i;
+	if(coins < cnt){
+	  coins = cnt;
+	  result = itos(candA) + "/" + itos(B) + " has " + itos(cnt) 
+	    + " exact digits";
 	}
       }
     }
-    cout << nu << "/" << de << " " << l - 1 << endl;
     return result;
   }
   
@@ -79,10 +96,7 @@ public:
 // BEGIN CUT HERE 
 int main() {
   BestApproximationDiv2 ___test;
-  //___test.run_test(-1);
-  ___test.run_test(1);
-  ___test.run_test(3);
-  ___test.run_test(4);
-  ___test.run_test(5);
+  ___test.run_test(-1);
+  //___test.run_test(0);
 }
 // END CUT HERE
