@@ -15,49 +15,38 @@
 #include <sstream>
 #include <complex>
 #include <stack>
-#include <queue>
 #include <cstring>
+#include <queue>
 using namespace std;
 static const double EPS = 1e-8;
 static const int INF= 1 << 29;
 #define ALL(c) (c).begin(), (c).end()
 typedef long long ll;
+const int  MOD = 1000000007;
 
-int MOD = 1000000007;
-int dp[42][1610][42][2];
+int dp[50][50][50 * 50][2];
 
 class FoxAverageSequence {
 public:
+  vector<int> S;
+  int rec(int idx, int sum, int prev, int flag){ 
+    if(idx == S.size()) return 1;
+    if(dp[idx][prev][sum][flag] >= 0) return dp[idx][prev][sum][flag];
+    int ret = 0;
+    int  mi = 0, ma = 40;
+    if(S[idx] != -1) mi = ma = S[idx];
+    if(idx > 0) ma = min(ma, sum / idx);
+    if(flag) mi = max(mi, prev);
+    for(int i = mi; i <= ma; i++){
+      ret += rec(idx + 1, sum + i, i, prev > i);
+      if(ret >= MOD) ret -= MOD;
+    }
+    return dp[idx][prev][sum][flag] = ret;
+  }
   int theCount(vector <int> seq) {
-    memset(dp, 0, sizeof(dp));
-    dp[0][0][0][0] = 1;
-    int N = seq.size();
-    for(int i = 1; i <= N; i++){
-      for(int j = 0; j <= 1600; j++){
-	for(int k = 0; k <= 40; k++){
-	  if(j - k < k * (i - 1)) continue;
-	  if(seq[i - 1] != -1 && seq[i - 1] != k) continue;
-	  for(int prek = 0; prek <= 40; prek++){
-	    if(prek > k){
-	      dp[i][j][k][0] += dp[i - 1][j - k][prek][1];
-	      dp[i][j][k][0] %= MOD;
-	    }else{
-	      dp[i][j][k][1] += (dp[i - 1][j - k][prek][0] 
-				 + dp[i - 1][j - k][prek][1]) % MOD;
-	      dp[i][j][k][1] %= MOD;
-	    }
-	  }
-	}
-      }
-    }
-    int ans = 0;
-    for(int j = 0; j <= 1600; j++){
-      for(int k = 0; k <= 40; k++){
-	ans += (dp[N][j][k][0] + dp[N][j][k][1]) % MOD;
-	ans %= MOD;
-      }
-    }
-    return ans % MOD;
+    memset(dp, -1, sizeof(dp));
+    S = seq;
+    return rec(0, 0, 0, 0);
   }
   
 // BEGIN CUT HERE
