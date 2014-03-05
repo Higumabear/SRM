@@ -16,11 +16,14 @@
 #include <complex>
 #include <stack>
 #include <queue>
+#include <cstring>
+#include <numeric>
 using namespace std;
 static const double EPS = 1e-8;
-static const int INF= 1 << 29;
 #define ALL(c) (c).begin(), (c).end()
 typedef long long ll;
+static const int INF = 1 << 29;
+static const ll LINF = 1LL << 55;
 
 class CubeColoring {
 public:
