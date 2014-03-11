@@ -16,7 +16,6 @@
 #include <complex>
 #include <stack>
 #include <queue>
-#include <cstring>
 using namespace std;
 static const double EPS = 1e-8;
 static const int INF= 1 << 29;
@@ -25,22 +24,21 @@ typedef long long ll;
 
 class TheTicketsDivTwo {
 public:
-  double find(int n, int m, int k) {
-    double dp[20][20][20];
-    memset(dp, 0, sizeof(dp));
-    for(int i = 1; i <= k; i++) dp[1][1][i] = 1.0;
-    for(int i = 1; i <= n; i++) dp[i][1][0] = 1.0;
+  int K;
+  double rec(int idx, int n, int cnt){
+    if(K == cnt) return idx == 0 ? 1.0 : 0.0;;
+    if(n == 1) return 1.0;
     
-    for(int l = 1; l <= k; l++){
-      for(int i = 2; i <= n; i++){
-	dp[i][1][l] = 1 / 6.0 + dp[i][i][l - 1] / 2.0;
-	for(int j = 2; j <= i; j++){
-	  dp[i][j][l] = dp[i][j - 1][l - 1] / 2.0 
-	    + dp[i - 1][j - 1][l - 1] / 3.0;
-	}
-      }
+    if(idx == 0){
+      return 1.0 / 6.0 + 1.0 / 2.0 * rec((idx - 1 + n) % n, n, cnt + 1);
+    }else{
+      return 1.0 / 3.0 * rec(idx - 1, n - 1, cnt + 1) 
+	+ 1.0 / 2.0 * rec(idx - 1, n, cnt + 1);
     }
-    return dp[n][m][k];
+  }
+  double find(int n, int m, int k) {
+    K = k;
+    return rec(m - 1, n, 0);
   }
   
 // BEGIN CUT HERE
