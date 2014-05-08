@@ -23,35 +23,36 @@ static const int INF= 1 << 29;
 #define ALL(c) (c).begin(), (c).end()
 typedef long long ll;
 
-int memo[51][51][51][51];
-const int MOD = 1000000007;
+const ll MOD = 1000000007;
+
+ll dp[51][51][51][51];
 
 class AliceBobShuffle {
 public:
   vector<int> as, bs, ae, be;
   ll rec(int a, int b, int c, int d){
-    if(a == as.size() && b == bs.size() && 
-       c == ae.size() && d == be.size()) return 1;
-    if(memo[a][b][c][d] >= 0) return memo[a][b][c][d];
-    
+    if(a == (int)as.size() && b == (int)bs.size() && 
+       c == (int)ae.size() && d == (int) be.size())
+      return 1;
+
+    if(dp[a][b][c][d] >= 0) return dp[a][b][c][d];
+
     ll ret = 0;
-    if(a < (int)as.size() && c < (int)ae.size() && as[a] == ae[c]) {
-     ret = (ret + rec(a + 1, b, c + 1, d)) % MOD;   
-    }
-    if(a < (int)as.size() && d < (int)be.size() && as[a] == be[d]) 
+    if(a < as.size() && c < ae.size() && as[a] == ae[c])
+      ret = (ret + rec(a + 1, b, c + 1, d)) % MOD;
+    if(a < as.size() && d < be.size() && as[a] == be[d])
       ret = (ret + rec(a + 1, b, c, d + 1)) % MOD;
-    if(b < (int)bs.size() && c < (int)ae.size() && bs[b] == ae[c]) 
+    if(b < bs.size() && c < ae.size() && bs[b] == ae[c])
       ret = (ret + rec(a, b + 1, c + 1, d)) % MOD;
-    if(b < (int)bs.size() && d < (int)be.size() && bs[b] == be[d]) 
+    if(b < bs.size() && d < be.size() && bs[b] == be[d])
       ret = (ret + rec(a, b + 1, c, d + 1)) % MOD;
 
-    //cout << "koko" << ret << " ";
-    return memo[a][b][c][d] = ret;;
+    return dp[a][b][c][d] = ret;
   }
   int countWays(vector <int> AliceStart, vector <int> BobStart, vector <int> AliceEnd, vector <int> BobEnd) {
-    memset(memo, -1, sizeof(memo));
-    as = AliceStart; bs = BobStart; ae = AliceEnd; be = BobEnd;
-    return rec(0, 0, 0, 0) % MOD;
+    memset(dp, -1, sizeof(dp));
+    as = AliceStart, ae = AliceEnd, bs = BobStart, be = BobEnd;
+    return rec(0, 0, 0, 0);
   }
   
 // BEGIN CUT HERE
