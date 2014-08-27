@@ -24,47 +24,45 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-int dp[110][3][5];
+bool dp[51][3][5];
 
 using namespace std;
 class NiceOrUgly {
 public:
-  bool vo(char c){
-    return c == 'A' || c == 'I' || c == 'U' || c == 'E' || c == 'O';
+  bool vo(char c){ 
+    return (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
   }
   string describe(string s){
-    memset(dp, 0, sizeof(dp));
-    int N = s.length();
+    memset(dp, false, sizeof(dp));
+    int L = s.length();
 
-    int ugly = 0, nice = 0;
+    bool ugly = false;
 
     dp[0][0][0] = true;
-    for(int i = 0; i < N; i++){
+    for(int i = 0; i < L; i++){
       for(int a = 0; a < 3; a++){
 	for(int b = 0; b < 5; b++){
 	  if(dp[i][a][b]){
 	    if(vo(s[i]) || s[i] == '?'){
-	      if(a >= 2) ugly = 1;
-	      else dp[i + 1][a + 1][0] = 1;
+	      if(a >= 2) ugly = true;
+	      else dp[i + 1][a + 1][0] = true;
 	    }
 	    if(!vo(s[i]) || s[i] == '?'){
-	      if(b >= 4) ugly = 1;
-	      else dp[i + 1][0][b + 1] = 1;
+	      if(b >= 4) ugly = true;
+	      else dp[i + 1][0][b + 1] = true;
 	    }
 	  }
 	}
       }
     }
-
+    bool nice = false;
     for(int a = 0; a < 3; a++)
       for(int b = 0; b < 5; b++)
-	nice |= dp[N][a][b];
-    
-    if(nice){
-      if(ugly) return "42";
-      else return "NICE";
-    }
-    else return "UGLY";
+	nice |= dp[L][a][b];
+
+    if(ugly && nice) return "42";
+    if(ugly) return "UGLY";
+    return "NICE";
   }
   
 // BEGIN CUT HERE

@@ -24,39 +24,55 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-int dp[2010][2010];
+int dp[1100][1100];
+bool vis[1100][1100];
 
 using namespace std;
 class EmoticonsDiv1 {
 public:
   int printSmiles(int smiles){
-    for(int i = 0; i < 2010; i++)
-      for(int j = 0; j < 2010; j++)
+    for(int i = 0; i < 1100; i++)
+      for(int j = 0; j < 1100; j++)
 	dp[i][j] = INF;
+    memset(vis, false, sizeof(vis));
+
+    dp[1][0] = 0;
 
     queue<pair<int, int> > Q;
-    Q.push(make_pair(1, 0)); dp[1][0] = 0;
+    Q.push(make_pair(1, 0));
+
     while(!Q.empty()){
-      int cur = Q.front().first;
+      int num = Q.front().first;
       int clip = Q.front().second;
       Q.pop();
-      if(cur == smiles) return dp[cur][clip];
 
-      int d = dp[cur][clip];
-      if(d + 1 < dp[cur][cur]){
-	dp[cur][cur] = d + 1;
-	Q.push(make_pair(cur, cur));
+      //cout << num << " " << clip << "\t" << dp[num][clip] << endl;
+      
+      if(vis[num][clip]) continue;
+      vis[num][clip] = true;
+      
+      if(num == smiles) return dp[num][clip];
+
+      //copy
+      if(num != clip && num){
+	dp[num][num] = min(dp[num][num], dp[num][clip] + 1);
+	Q.push(make_pair(num, num));
       }
-      if(cur + clip < 2010 && d + 1 < dp[cur + clip][clip]){
-	dp[cur + clip][clip] = d + 1;
-	Q.push(make_pair(cur + clip, clip));
+
+      //paste
+      if(clip && num + clip < 1100){
+	dp[num + clip][clip] = min(dp[num + clip][clip], dp[num][clip] + 1);
+	Q.push(make_pair(num + clip, clip));
       }
-      if(cur - 1 >= 0 && d + 1 < dp[cur - 1][clip]){
-	dp[cur - 1][clip] = d + 1;
-	Q.push(make_pair(cur - 1, clip));
+
+      //del
+      if(num){
+	dp[num - 1][clip] = min(dp[num - 1][clip], dp[num][clip] + 1);
+	Q.push(make_pair(num - 1, clip));      
       }
+      
     }
-    //return *min_element(dp[smiles], dp[smiles] + 2010);
+    return -1;
   }
   
 // BEGIN CUT HERE

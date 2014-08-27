@@ -1,93 +1,57 @@
+// BEGIN CUT HERE
+// END CUT HERE
+#include <sstream>
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <iostream>
+#include <utility>
+#include <set>
+#include <cctype>
+#include <queue>
+#include <stack>
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
-#include <climits>
-#include <cfloat>
-#include <map>
-#include <utility>
-#include <set>
-#include <iostream>
-#include <memory>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <functional>
-#include <sstream>
-#include <complex>
-#include <stack>
-#include <queue>
-using namespace std;
-static const double EPS = 1e-8;
-static const int INF= 1 << 29;
-#define ALL(c) (c).begin(), (c).end()
+#include <cstring>
+#include <numeric>
+
 typedef long long ll;
+#define INF 1 << 29
+#define LLINF 1LL << 62
+#define EPS 1e-6
+#define ALL(c) (c).begin(), (c).end()
+#define dump(x)  cerr << #x << " = " << (x) << endl;
 
-struct p{
-  ll x, y;
-  bool operator<(const p &r)const{
-    if(x != r.x) return x < r.x;
-    else return y <= r.y;
-  }
-};
-
-struct q{
-  ll x, y;
-  bool operator<(const q &r)const{
-    if(y != r.y) return y < r.y;
-    else return x <= r.x;
-  }
-};
-
-
+using namespace std;
 class MinimumSquare {
 public:
-
-  ll labs(ll t){
-    return t > 0 ? t : -t;
-  }
-  long long minArea(vector <int> x, vector <int> y, int K) {
-    long long result  = 1LL << 62;
+  ll labs(ll a){ return a > 0 ? a : -a;}
+  long long minArea(vector <int> x, vector <int> y, int K){
     int N = x.size();
-    
+    ll ans = LLINF;
     for(int i = 0; i < N; i++){
       for(int j = 0; j < N; j++){
-	if(x[j] < x[i]) continue;
-	
-	for(int k = 0; k < N; k++){
-	  ll w = x[j] - x[i];
+	int y1 = y[i] - 1;
+	int y2 = y[j] + 1;
 
-	  int cnt = 0;
-	  for(int l = 0; l < N; l++)
-	    if(x[i] <= x[l] && x[l] <= x[j] &&
-	       y[k] <= y[l] && y[l] <= y[k] + w) cnt++;
-	  
-	  if(cnt >= K) result = min(result, (w + 2) * (w + 2));
+	vector<int> t;
+	for(int k = 0; k < N; k++)
+	  if(y1 < y[k] && y[k] < y2) t.push_back(x[k]);
+	
+	sort(ALL(t));
+	for(int k = 0; k <= (int)t.size() - K; k++){
+	  ll sz = max(y2 - y1, t[k + K - 1] - t[k] + 2);
+	  ans = min(ans, (ll)sz * sz);
 	}
       }
     }
-    for(int i = 0; i < N; i++){
-      for(int j = 0; j < N; j++){
-	if(y[j] < y[i]) continue;
-	
-	for(int k = 0; k < N; k++){
-	  ll h = y[j] - y[i];
-
-	  int cnt = 0;
-	  for(int l = 0; l < N; l++)
-	    if(y[i] <= y[l] && y[l] <= y[j] &&
-	       x[k] <= x[l] && x[l] <= x[k] + h) cnt++;
-	  
-	  if(cnt >= K) result = min(result, (h + 2) * (h + 2));
-	}
-      }
-    }
-
-
-    return result;
+    return ans;
   }
   
 // BEGIN CUT HERE
-	public:
+	public: 
 	void run_test(int Case) { if ((Case == -1) || (Case == 0)) test_case_0(); if ((Case == -1) || (Case == 1)) test_case_1(); if ((Case == -1) || (Case == 2)) test_case_2(); if ((Case == -1) || (Case == 3)) test_case_3(); if ((Case == -1) || (Case == 4)) test_case_4(); }
 	private:
 	template <typename T> string print_array(const vector<T> &V) { ostringstream os; os << "{ "; for (typename vector<T>::const_iterator iter = V.begin(); iter != V.end(); ++iter) os << '\"' << *iter << "\","; os << " }"; return os.str(); }
@@ -101,10 +65,9 @@ public:
 // END CUT HERE
 
 };
-
-// BEGIN CUT HERE 
+// BEGIN CUT HERE
 int main() {
-  MinimumSquare ___test;
-  ___test.run_test(-1);
+MinimumSquare ___test;
+___test.run_test(-1);
 }
-// END CUT HERE
+// END CUT HERE 
