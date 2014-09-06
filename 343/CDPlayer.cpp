@@ -28,16 +28,17 @@ using namespace std;
 class CDPlayer {
 public:
   int isRandom(vector <string> songlist, int n){
-    string song = accumulate(ALL(songlist), string(""));
-    int L = song.length();
+    string s = accumulate(ALL(songlist), string(""));
+
+    int L = s.length();
     for(int i = 0; i < n; i++){
-      set<char> se;
+      set<char> t;
       for(int j = 0; j < L; j++){
-	if(j % n == i) se.clear();
-	if(!se.insert(song[j]).second) goto L; 
+	if(j % n == i) t.clear();
+	if(!t.insert(s[j]).second) goto L1;
       }
       return i;
-    L:;
+    L1:;
     }
     return -1;
   }

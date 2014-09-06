@@ -24,29 +24,34 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
+char s[10000];
+
 using namespace std;
 class PalindromicSubstringsDiv1 {
 public:
   double expectedPalindromes(vector <string> S1, vector <string> S2){
-    string s = accumulate(ALL(S1), string("")) + accumulate(ALL(S2), string(""));
-    int L = s.length();
-    double ans = 0;
+    string t = accumulate(ALL(S1), string("")) + accumulate(ALL(S2), string(""));
+    int L = t.length();
+    double ans = 0.0;
+    for(int i = 0; i < L; i++) 
+      s[2 * i] = t[i], s[2 * i + 1] = '-';
+    
+    L *= 2;
+    vector<double> p26(10000, 0);
+    p26[0] = 1; for(int i = 1; i < 10000; i++) p26[i] = p26[i - 1] / 26.0;
     for(int i = 0; i < L; i++){
-      for(int j = i; j < L; j++){
-	int cnt = 0;
-	for(int idx = 0; i + idx <= j - idx; idx++){
-	  if(s[i + idx] == '?' && s[j - idx] == '?') cnt++;
-	  if(s[i + idx] != s[j - idx] 
-	     && isalpha(s[i + idx]) && isalpha(s[j - idx])){
-	    cnt = -1; break;
-	  }
+      int k = i % 2;
+      int opt = 0, num = 0;
+      string p;
+      while(i - k >= 0 && i + k < L){
+	if(isalpha(s[i - k]) && isalpha(s[i + k]) && s[i - k] != s[i + k]) break;
+	if(s[i - k] == '?' && s[i + k] == '?') opt++;
+	if(s[i - k] == '?' || s[i + k] == '?'){
+	  if(k == 0) num++;
+	  else num += (s[i - k] == '?') + (s[i + k] == '?');
 	}
-	double c = cnt == -1 ? 0 : 1;
-	for(int k = i; k <= j; k++){
-	  if(k - i + 1 <= cnt) c *= 26;
-	  if(s[k] == '?') c /= 26;
-	}
-	ans += c;
+	ans += p26[num - opt];
+	k += 2;
       }
     }
     return ans;

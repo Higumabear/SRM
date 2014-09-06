@@ -6,7 +6,6 @@
 #include <map>
 #include <algorithm>
 #include <iostream>
-#include <iterator>
 #include <utility>
 #include <set>
 #include <cctype>
@@ -25,41 +24,41 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-#define maxt 1003
-#define maxn 101
-
-int ne[maxt][maxn];
-
 using namespace std;
 class BusTrip {
 public:
-  void add(int t0, int t, int a, int b){
-    while(t0 < maxt){
-      if(ne[t0][a] == -1) ne[t0][a] = b;
-      t0 += t;
-    }
-  }
   int returnTime(int N, vector <string> buses){
-    int i, j, t, sumt, f;
-    memset(ne, -1, sizeof(ne));
-    for(i = 0; i < (int)buses.size(); i++){
-      stringstream ss(buses[i]);
-      sumt = t = 0;
+    int M = buses.size();
+
+    vector<vector<int> > to(N, vector<int>(1000, -1));
+    for(int i = 0; i < M; i++){
+      istringstream iss(buses[i]);
       vector<int> a;
-      while(ss >> j) a.push_back(j);
-      a.push_back(a[0]);
-      for(j = 0; j < (int)a.size(); j++) if(j) sumt += abs(a[j] - a[j - 1]);
-      for(j = 0; j < (int)a.size(); j++) 
-	if(j) add(t, sumt, a[j - 1], a[j]), t += abs(a[j] - a[j - 1]);
+      int x; while(iss >> x) a.push_back(x);
+
+      int k = 0, t = 0;
+      while(t < 1000){
+	int k2 = (k + 1) % a.size();
+	if(to[a[k]][t] == -1) to[a[k]][t] = a[k2];
+	t += abs(a[k] - a[k2]);
+	k = k2;
+      }
     }
-    i = t = f = 0;
+    int curr = 0;
+    int t = -1;
     while(1){
-      if(t > 1001) return -1;
-      else if(f && !i) return t - 1;
-      else if(ne[t][i] == -1) t++;
-      else j = ne[t][i], t += abs(j - i) + 1, i = j, f = 1;
+      do{
+	t++;
+      }while(t < 1000 && to[curr][t] == -1);
+
+      if(t == 1000) return -1;
+      int next = to[curr][t];
+      t += abs(curr - to[curr][t]);
+      curr = next;
+
+      if(t > 1000) return -1;
+      if(curr == 0) return t;
     }
-    return 0;
   }
   
 // BEGIN CUT HERE

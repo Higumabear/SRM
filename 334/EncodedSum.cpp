@@ -24,13 +24,15 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
+int num[11] = {0,1,2,3,4,5,6,7,8,9};
+
 using namespace std;
 class EncodedSum {
 public:
   long long maximumSum(vector <string> numbers){
     vector<int> d;
     for(int i = 0; i < 10; i++) d.push_back(i);
-    ll tb[11] = {1,10,100,1000,10000,100000,1000000,10000000,100000000,1000000000LL,10000000000LL,100000000000LL};
+    ll tb[12] = {1,10,100,1000,10000,100000,1000000,10000000,100000000,1000000000LL,10000000000LL,100000000000LL};
     vector<ll> a(10, 0);
     vector<bool> b(10, true);
     for(int i = 0; i < (int)numbers.size(); i++){

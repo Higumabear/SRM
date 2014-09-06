@@ -28,20 +28,21 @@ using namespace std;
 class Pathfinding {
 public:
   int getDirections(int x, int y){
-    int X = abs(x), Y = abs(y);
-    if(X == 0 && Y == 0) return 0;
     if(x >= 0 && y >= 0){
-      if(X % 2 == 1 && Y % 2 == 1) return X + Y + 2;
-      else return X + Y;
-    }else if(x > 0 && y < 0){
-      if(X % 2 == 0 && Y % 2 == 1) return X + Y + 2;
-      else return X + Y;
-    }else if(x < 0 && y > 0){
-      if(X % 2 == 1 && Y % 2 == 0) return X + Y + 2;
-      else return X + Y;
-    }else{
-      if(X % 2 == 0 && Y % 2 == 0) return X + Y + 4;
-      else return X + Y + 2;
+      if(x % 2 == 0 || y % 2 == 0) return x + y;
+      else return x + y + 2;
+    }
+    if(x > 0 && y <= 0){
+      if(x % 2 == 1 || abs(y) % 2 == 0) return abs(x) + abs(y);
+      else return abs(x) + abs(y) + 2;
+    }
+    if(x <= 0 && y > 0){
+      if(abs(x) % 2 == 0 || y % 2 == 1) return abs(x) + abs(y);
+      return abs(x) + abs(y) + 2;
+    }
+    if(x <= 0 && y <= 0){
+      if(abs(x) % 2 == 1 || abs(y) % 2 == 1) return abs(x) + abs(y) + 2;
+      else return abs(x) + abs(y) + 4;
     }
   }
   

@@ -27,15 +27,55 @@ typedef long long ll;
 using namespace std;
 class Multifactorial {
 public:
-  string calcMultiFact(int n, int k){
-    ll ret = 1;
-    for(int i = n; i >= 1; i -= k){
-      if(ret >= 1000000000000000000LL / i + 1) return "overflow";
-      ret *= i;
+  string adds(string a, string b){
+    a = string(1000 - a.length(), '0') + a;
+    b = string(1000 - b.length(), '0') + b;
+    reverse(ALL(a)); reverse(ALL(b));
+    string c(1001, '0');
+    
+    int co = 0;
+    int i;
+    for(i = 0; i < 1000; i++){
+      int aa = a[i] - '0', bb = b[i] - '0';
+      c[i] = (char)(((aa + bb + co) % 10) + '0');
+      co = (aa + bb) / 10;
     }
-    stringstream ss;
-    ss << ret; string s; ss >> s;
-    return s;
+    c[i] = (char)('0' + co);
+    return c;
+  }
+  string muls(string a, string b){
+    a = string(1000 - a.length(), '0') + a;
+    b = string(1000 - b.length(), '0') + b;
+
+    int A = a.size(), B = b.size();
+    reverse(ALL(a)); reverse(ALL(b));
+
+    string ret;
+    for(int j = 0; j < B; j++){
+      int co = 0;
+      string d(1000, '0');
+      int i;
+      for(i = 0; i < A; i++){
+	int aa = a[i] - '0', bb = b[j] - '0';
+	d[i] = (char)((aa * bb + co) % 10 + '0');
+	co =  aa * bb / 10;
+      }
+      d[i] = (char)('0' + co);
+      //cout << d << endl;
+      ret = adds(ret, d);
+    }
+    return ret;
+  }
+  string calcMultiFact(int n, int k){
+    ll N = n, K = k;
+    
+    ll tmp = 1;
+    for(ll i = 0; N - i * K > 0; i++){
+      if(tmp > 1000000000000000000LL / (N - i * K)) return "overflow";
+      tmp = (tmp * (N - i * K));
+    }
+    stringstream ss; ss << tmp; string ans; ss >> ans;
+    return ans;
   }
   
 // BEGIN CUT HERE

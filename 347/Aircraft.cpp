@@ -27,20 +27,23 @@ typedef long long ll;
 using namespace std;
 class Aircraft {
 public:
+  ll s2(int a){return (ll)a*a; }
   string nearMiss(vector <int> p1, vector <int> v1, vector <int> p2, vector <int> v2, int R){
-    ll vx = v1[0] - v2[0], vy = v1[1] - v2[1], vz = v1[2] - v2[2];
-    ll px = p1[0] - p2[0], py = p1[1] - p2[1], pz = p1[2] - p2[2];
-    ll A = (vx * vx + vy * vy + vz * vz);
-    ll B = (2LL * (vx * px + vy * py + vz * pz));
-    ll C = (px * px + py * py + pz * pz) - R * R;
-    
+    ll A = s2(v1[0] - v2[0]) + s2(v1[1] - v2[1]) + s2(v1[2] - v2[2]);
+    ll B = 2LL * (p1[0] - p2[0]) * (v1[0] - v2[0])
+      + 2LL * (p1[1] - p2[1]) * (v1[1] - v2[1])
+      + 2LL * (p1[2] - p2[2]) * (v1[2] - v2[2]);
+    ll C = s2(p1[0] - p2[0]) + s2(p1[1] - p2[1]) + s2(p1[2] - p2[2]) - s2(R);
+    cout << A << " " << B << " " << C << endl << endl;;
+
     if(A == 0LL){
-      if(B == 0LL) return C <= 0LL ? "YES" : "NO";
+      if(B == 0LL) return C <= 0 ? "YES" : "NO";
       return B * C <= 0 ? "YES" : "NO";
     }else{
-      if(B <= 0) return B * B >= 4LL * A * C ? "YES" : "NO"; 
-      return (C > 0LL) ? "NO" : "YES";
+      if(B <= 0LL) return B * B >= 4LL * A * C ? "YES" : "NO";
+      return C <= 0LL ? "YES" : "NO";
     }
+    return "NO";
   }
   
 // BEGIN CUT HERE
