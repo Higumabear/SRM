@@ -10,7 +10,7 @@
 #include <set>
 #include <cctype>
 #include <queue>
-#include <stack>
+string#include <stack>
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
@@ -28,25 +28,31 @@ using namespace std;
 class BusTrip {
 public:
   int returnTime(int N, vector <string> buses){
-    vector<vector<int>> d(N, vector<int>(1000, -1));
     int M = buses.size();
+    vector<vector<int>> to(N, vector<int>(1000, -1));
+
+    //toはi番目のバス停に時間jに辿り着いた時に次に行くことになるバス停の番号
     for(int i = 0; i < M; i++){
-      stringstream ss(buses[i]);
+      int x = 0;
       vector<int> a;
-      int x; while(ss >> x) a.push_back(x);
+      stringstream ss(buses[i]);
+      while(ss >> x) a.push_back(x);
       int k = 0, t = 0;
       while(t < 1000){
 	int k2 = (k + 1) % a.size();
-	if(d[a[k]][t] == -1) d[a[k]][t] = a[k2];
-	t += abs(a[k2] - a[k]);
+	if(to[a[k]][t] == -1) to[a[k]][t] = a[k2];
+	t += abs(a[k] - a[k2]);
 	k = k2;
       }
     }
-    int curr = 0, t = -1;
+    int curr = 0;
+    int t = -1;
     while(1){
-      do{ t++; }while(t < 1000 && d[curr][t] == -1);
-      if(t >= 1000) return -1;
-      int next = d[curr][t];
+      do{
+	t++;
+      }while(t < 1000 && to[curr][t] == -1);
+      if(t == 1000) return -1;
+      int next = to[curr][t];
       t += abs(curr - next);
       curr = next;
       if(t > 1000) return -1;

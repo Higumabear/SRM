@@ -31,26 +31,25 @@ public:
     vector<vector<int>> d(N, vector<int>(1000, -1));
     int M = buses.size();
     for(int i = 0; i < M; i++){
-      stringstream ss(buses[i]);
-      vector<int> a;
-      int x; while(ss >> x) a.push_back(x);
+      stringstream ss(buses[i]); 
+      vector<int> a; int x; while(ss >> x) a.push_back(x);
       int k = 0, t = 0;
       while(t < 1000){
-	int k2 = (k + 1) % a.size();
-	if(d[a[k]][t] == -1) d[a[k]][t] = a[k2];
-	t += abs(a[k2] - a[k]);
-	k = k2;
+	int knext = (k + 1) % a.size();
+	if(d[a[k]][t] == -1) d[a[k]][t] = a[knext];
+	t += abs(a[knext] - a[k]);
+	k = knext;
       }
     }
-    int curr = 0, t = -1;
+    int cur = 0, t = -1;
     while(1){
-      do{ t++; }while(t < 1000 && d[curr][t] == -1);
+      do {t++;} while(t < 1000 && d[cur][t] == -1);
       if(t >= 1000) return -1;
-      int next = d[curr][t];
-      t += abs(curr - next);
-      curr = next;
+      int next = d[cur][t];
+      t += abs(next - cur);
       if(t > 1000) return -1;
-      if(curr == 0) return t;
+      cur = next;
+      if(cur == 0) return t;
     }
     return -1;
   }
