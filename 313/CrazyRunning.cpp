@@ -27,13 +27,18 @@ typedef long long ll;
 using namespace std;
 class CrazyRunning {
 public:
+  int a, b, N;
+  double f(int n){
+    if(n == 0) return 0;
+    double cA = 1 - (N - n - 2) * 1.0 / (N - 1) - (N - n - 1) * 1.0 / (N - 1) / (N - 1);
+    double cB = 2 * b + 2 * a / (N - 1);
+    double cC = n * N * 1.0 / (N - 1) / (N - 1);
+    return (cB + f(n - 1) * cC) / cA;
+  }
   double expectedTime(vector <int> cor){
-    int N = cor.size();
-    double S = accumulate(ALL(cor), 0);
-    double R = cor[0] + (S - cor[0]) / (N - 1.0);
-    for(int i = 1; i <= N - 2; i++)
-      R += 2.0 * S * (N - 1) / N / i;
-    return R;
+    N = cor.size();
+    a = cor[0], b = (accumulate(ALL(cor), 0) - a) * 1.0 / (N - 1);
+    return a + b + f(N - 2);
   }
   
 // BEGIN CUT HERE
