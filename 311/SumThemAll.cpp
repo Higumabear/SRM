@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,12 +25,13 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
+ll a[20];
+
 class SumThemAll {
 public:
   ll sum(ll n){
     if(n < 10) return n;
-    return sum(n / 10) + sum(n % 10);
+    return sum(n / 10) + n % 10;
   }
   ll cnt(ll n){
     if(n < 10) return n * (n + 1) / 2;
@@ -37,10 +39,9 @@ public:
     return cnt(n + 1) - sum(n + 1);
   }
   long long getSum(int lowerBound, int upperBound){
-    if(lowerBound == 0) lowerBound++;
+    if(lowerBound == 0) lowerBound = 1;
     return cnt(upperBound) - cnt(lowerBound - 1);
-  }
-  
+  }  
 // BEGIN CUT HERE
 	public:
 	void run_test(int Case) { if ((Case == -1) || (Case == 0)) test_case_0(); if ((Case == -1) || (Case == 1)) test_case_1(); if ((Case == -1) || (Case == 2)) test_case_2(); if ((Case == -1) || (Case == 3)) test_case_3(); if ((Case == -1) || (Case == 4)) test_case_4(); }

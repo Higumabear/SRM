@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -26,13 +27,11 @@ typedef long long ll;
 
 bool dp[1001][50][50];
 
-using namespace std;
 class PlacingPieces {
 public:
-  int len;
-  int N;
+  int len, N;
   vector<int> p;
-  int calc(int idx, int cnt, int sum){
+  void calc(int idx, int cnt, int sum){
     dp[sum][idx][cnt] = true;
     for(int i = idx; i < N; i++){
       for(int j = cnt; j < N; j++){
@@ -44,13 +43,13 @@ public:
 	}
       }
     }
-    return 0;
+    return;
   }
   int optimalPlacement(int L, vector <int> pieces){
-    sort(ALL(pieces));
     N = pieces.size();
-    p = pieces;
+    sort(ALL(pieces));
     len = L;
+    p = pieces;
 
     int ans = N;
     for(int i = 0; i <= N; i++){
@@ -62,9 +61,8 @@ public:
       calc(i, i, sum);
       for(int l = 0; l <= 1000; l++)
 	for(int k = 0; k <= N; k++)
-	  if(dp[l][N][k] && L - l >= 0 && 
+	  if(dp[l][N][k] && L - 1 >= 0 && 
 	     1.0 * (L - l) / (k + 1) < pieces[i]) ans = min(ans, k);
-
     }
     return ans;
   }

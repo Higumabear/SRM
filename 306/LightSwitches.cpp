@@ -24,18 +24,16 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-
 using namespace std;
 class LightSwitches {
 public:
   long long countPossibleConfigurations(vector <string> switches){
     int N = switches.size();
     int M = switches[0].length();
-    vector<vector<int> > s(N, vector<int>(M, 0));
-    for(int i = 0; i < N; i++) 
-      for(int j = 0; j < M; j++)
-	if(switches[i][j] == 'Y') s[i][j] = 1;
-    
+    vector<vector<int>> s(N, vector<int>(M, 0));
+    for(int i = 0; i < N; i++)
+      for(int j = 0; j < M; j++) s[i][j] = switches[i][j] == 'Y';
+
     int cnt = 0;
     for(int i = 0; i < M; i++){
       int chosen = -1;
@@ -49,9 +47,8 @@ public:
       for(int m = 0; m < M; m++) swap(s[chosen][m], s[cnt][m]);
       for(int n = cnt + 1; n < N; n++){
 	if(s[n][i] != 1) continue;
-	for(int m = 0; m < M; m++){
-	  s[n][m] = ((s[n][m] == 1) ^ (s[cnt][m] == 1)) ? 1 : 0;
-	}
+	for(int m = 0; m < M; m++)
+	  s[n][m] = (s[n][m] == 1) ^ (s[cnt][m] == 1) ? 1 : 0;
       }
       cnt++;
     }

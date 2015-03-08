@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,21 +25,16 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
+
+
 class CrazyRunning {
 public:
-  int a, b, N;
-  double f(int n){
-    if(n == 0) return 0;
-    double cA = 1 - (N - n - 2) * 1.0 / (N - 1) - (N - n - 1) * 1.0 / (N - 1) / (N - 1);
-    double cB = 2 * b + 2 * a / (N - 1);
-    double cC = n * N * 1.0 / (N - 1) / (N - 1);
-    return (cB + f(n - 1) * cC) / cA;
-  }
-  double expectedTime(vector <int> cor){
-    N = cor.size();
-    a = cor[0], b = (accumulate(ALL(cor), 0) - a) * 1.0 / (N - 1);
-    return a + b + f(N - 2);
+  double expectedTime(vector<int> cor){
+    int N = cor.size();
+    double S = accumulate(ALL(cor), 0);
+    double R = cor[0] + (S - cor[0]) / (N - 1.0);
+    for(int i = 1; i < N - 1; i++) R += 2.0 * S * (N - 1) / N / i;
+    return R;
   }
   
 // BEGIN CUT HERE
@@ -47,10 +43,10 @@ public:
 	private:
 	template <typename T> string print_array(const vector<T> &V) { ostringstream os; os << "{ "; for (typename vector<T>::const_iterator iter = V.begin(); iter != V.end(); ++iter) os << '\"' << *iter << "\","; os << " }"; return os.str(); }
 	void verify_case(int Case, const double &Expected, const double &Received) { cerr << "Test Case #" << Case << "..."; if (Expected == Received) cerr << "PASSED" << endl; else { cerr << "FAILED" << endl; cerr << "\tExpected: \"" << Expected << '\"' << endl; cerr << "\tReceived: \"" << Received << '\"' << endl; } }
-	void test_case_0() { int Arr0[] = {10,20}; vector <int> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); double Arg1 = 30.0; verify_case(0, Arg1, expectedTime(Arg0)); }
-	void test_case_1() { int Arr0[] = {150,150,150}; vector <int> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); double Arg1 = 900.0; verify_case(1, Arg1, expectedTime(Arg0)); }
-	void test_case_2() { int Arr0[] = {100,150,200}; vector <int> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); double Arg1 = 875.0; verify_case(2, Arg1, expectedTime(Arg0)); }
-	void test_case_3() { int Arr0[] = {1000,1000,900,1000,555,1000,2562}; vector <int> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); double Arg1 = 33550.32857142857; verify_case(3, Arg1, expectedTime(Arg0)); }
+	void test_case_0() { int Arr0[] = {10,20}; int[] Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); double Arg1 = 30.0; verify_case(0, Arg1, expectedTime(Arg0)); }
+	void test_case_1() { int Arr0[] = {150,150,150}; int[] Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); double Arg1 = 900.0; verify_case(1, Arg1, expectedTime(Arg0)); }
+	void test_case_2() { int Arr0[] = {100,150,200}; int[] Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); double Arg1 = 875.0; verify_case(2, Arg1, expectedTime(Arg0)); }
+	void test_case_3() { int Arr0[] = {1000,1000,900,1000,555,1000,2562}; int[] Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); double Arg1 = 33550.32857142857; verify_case(3, Arg1, expectedTime(Arg0)); }
 
 // END CUT HERE
 

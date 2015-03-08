@@ -35,18 +35,18 @@ public:
     for(int i = 1; i <= nDice; i++){
       for(int j = 0; j <= theSum; j++){
 	for(int k = 1; k <= maxSide; k++){
-	  if(k == v)
-	    dp[i][min(j + k, theSum)][1] += (dp[i - 1][j][0] + dp[i - 1][j][1]) / maxSide;
-	  else{
-	    dp[i][min(j + k, theSum)][0] += dp[i - 1][j][0] / maxSide;
+	  if(k == v){
+	    dp[i][min(j + k, theSum)][1] += (dp[i - 1][j][1] + dp[i - 1][j][0]) / maxSide;
+	  }else{
 	    dp[i][min(j + k, theSum)][1] += dp[i - 1][j][1] / maxSide;
+	    dp[i][min(j + k, theSum)][0] += dp[i - 1][j][0] / maxSide;
 	  }
 	}
       }
     }
-    double ans = dp[nDice][theSum][1], sum = 0.0;
+    double sum = 0.0;
     for(int i = 0; i <= theSum; i++) sum += dp[nDice][i][1];
-    return ans / sum;
+    return dp[nDice][theSum][1] / sum;
   }
   
 // BEGIN CUT HERE

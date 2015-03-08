@@ -35,10 +35,10 @@ public:
   void dfs(int x1, int y1, int x2, int y2){
     if(vis[x1][y1][x2][y2]) return;
     vis[x1][y1][x2][y2] = true;
-    
-    int tam = y1 - x1 + y2 - x2;
-    ans = max(tam, ans);
 
+    int tam = y1 - x1 + y2 - x2;
+    ans = max(ans, tam);
+    
     if(x1){
       if(y1 < tam1 && A[x1 - 1] == A[y1]) dfs(x1 - 1, y1 + 1, x2, y2);
       if(y2 < tam2 && A[x1 - 1] == B[y2]) dfs(x1 - 1, y1, x2, y2 + 1);
@@ -49,7 +49,7 @@ public:
     }
   }
   int longestPal(string s, string t){
-    A = s; B = t; tam1 = s.length(); tam2 = t.length();
+    A = s, B = t; tam1 = s.length(); tam2 = t.length();
     ans = 0;
     for(int i = 0; i <= tam1; i++){
       for(int j = 0; j <= tam2; j++){

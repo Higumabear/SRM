@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,9 +25,7 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
-
-const int MAX_V = 10000;
+const int MAX_V = 100000;
 
 int V; // 頂点数
 vector<int> G[MAX_V]; // グラフの隣接リスト
@@ -35,6 +34,16 @@ vector<int> vs; // 帰りがけの順番の並び
 bool used[MAX_V];
 int cmp[MAX_V];
 
+void scc_init(){
+  for(int i = 0; i < MAX_V; i++){
+    G[i].clear();
+    rG[i].clear();
+    used[i] = false;
+    cmp[i] = INF;
+  }
+  vs.clear();
+}
+
 void add_edge(int from, int to){
   G[from].push_back(to);
   rG[to].push_back(from);
@@ -42,7 +51,7 @@ void add_edge(int from, int to){
 
 void dfs(int v){
   used[v] = true;
-  for(int i = 0; i < (int)G[v].size(); i++){
+  for(int i = 0; i < G[v].size(); i++){
     if(!used[G[v][i]]) dfs(G[v][i]);
   }
   vs.push_back(v);
@@ -51,7 +60,7 @@ void dfs(int v){
 void rdfs(int v, int k){
   used[v] = true;
   cmp[v] = k;
-  for(int i = 0; i < (int)rG[v].size(); i++){
+  for(int i = 0; i < rG[v].size(); i++){
     if(!used[rG[v][i]]) rdfs(rG[v][i], k);
   }
 }
@@ -72,41 +81,43 @@ int scc(){
   return k;
 }
 
-
 class AntarcticaPolice {
 public:
+  int N;
   double minAverageCost(vector <int> costs, vector <string> roads){
     V = costs.size();
     for(int i = 0; i < V; i++) G[i].clear(), rG[i].clear();
     for(int i = 0; i < V; i++)
-      for(int j = 0; j < V; j++) if(roads[i][j] == 'Y') add_edge(i, j);
+      for(int j = 0; j < V; j++) 
+	if(roads[i][j] == 'Y') add_edge(i, j);
     int k = scc(), deg[50] = {};
     bool e[50][50] = {};
-    for(int i = 0; i < V; i++) 
-      for(int j = 0; j < V; j++) 
+    for(int i = 0; i < V; i++)
+      for(int j = 0; j < V; j++)
 	if(roads[i][j] == 'Y') e[cmp[i]][cmp[j]] = true;
-    for(int i = 0; i < k; i++) 
-      for(int j = 0; j < k; j++) if(i != j && e[i][j]) deg[j]++;
+    for(int i = 0; i < k; i++)
+      for(int j = 0; j < k; j++)
+	if(i != j && e[i][j]) deg[j]++;
 
     bool use[50] = {};
     int sum = 0, m = 0;
     for(int i = 0; i < k; i++){
       if(deg[i] != 0) continue;
       int mni = -1;
-      for(int j = 0; j < V; j++) 
-	if(cmp[j] == i && (mni < 0 || costs[j] < costs[mni])) mni = j;
+      for(int j = 0; j < V; j++)
+	if(cmp[j] == i && (mni < 0 || costs[j] < costs[mni]))
+	  mni = j;
       use[mni] = 1;
       sum += costs[mni];
       m++;
     }
-    dump(sum);
-    dump(m);
     vector<int> v;
     for(int i = 0; i < V; i++) if(!use[i]) v.push_back(costs[i]);
     sort(ALL(v));
     for(int i = 1; i < (int)v.size(); i++) v[i] += v[i - 1];
     double ans = 1.0 * sum / m;
-    for(int i = 0; i < (int)v.size(); i++) ans = min(ans, 1.0 * (sum + v[i]) / (m + i + 1));
+    for(int i = 0; i < (int)v.size(); i++) 
+      ans = min(ans, 1.0 * (sum + v[i]) / (m + i + 1));
     return ans;
   }
   

@@ -10,7 +10,6 @@
 #include <set>
 #include <cctype>
 #include <queue>
-#include <deque>
 #include <stack>
 #include <cstdio>
 #include <cstdlib>
@@ -25,40 +24,50 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
+
 using namespace std;
 
-priority_queue<pair<ll, ll> > Q;
-
-ll ne(){
-  pair<ll, ll> p = Q.top(); Q.pop();
-  Q.push(make_pair(p.first - p.second, p.second));
-  return -p.first;
-}
+typedef pair<ll, int> P;
+priority_queue<P, vector<P>, greater<P>> pos;
 
 class TrainRobber {
 public:
+  ll s2i(string s){
+    stringstream ss(s);
+    ll ret; ss >> ret; return ret;
+  }
+  ll ne(){
+    P p = pos.top(); pos.pop();
+    pos.push(make_pair(p.first + p.second, p.second));
+    return p.first;
+  }
   double finalPosition(int length, int nCarriages, vector <string> offset, vector <string> period, int trainSpeed, int robberSpeed, int nBridges){
-    priority_queue<pair<ll, ll> > em; swap(em, Q);
-    vector<int> x, y;
-    ll now = 0;
-    for(int i = 0; i < (int)offset.size(); i++){
-      stringstream ss(offset[i]);
-      int t; while(ss >> t) x.push_back(t);
-    }
-    for(int i = 0; i < (int)period.size(); i++){
-      stringstream ss(period[i]);
-      int t; while(ss >> t) y.push_back(t);
-    }
-    for(int i = 0; i < (int)x.size(); i++) Q.push(make_pair(-x[i], y[i]));
+    vector<ll> o, p;
+
+    string x, tmpo,  tmpp; 
+    for(int i = 0; i < (int)offset.size(); i++) tmpo += offset[i] + " ";
+    stringstream ss(tmpo);
+    while(ss >> x) o.push_back(s2i(x));
+    for(int i = 0; i < (int)period.size(); i++) tmpp += period[i] + " ";
+    stringstream sss(tmpp);
+    while(sss >> x) p.push_back(s2i(x));
+    
+    int N = p.size();
+    priority_queue<P, vector<P>, greater<P>> a; 
+    swap(a, pos);
+    
+    for(int i = 0; i < N; i++) pos.push(make_pair(o[i], p[i]));
+    
+    ll cur = 0;
     for(int i = 0; i < nBridges; i++){
-      ll next = ne(); ll t = ((next - now) * robberSpeed) / ((ll)length * (robberSpeed + trainSpeed));
-
-      if(t >= nCarriages) return 1.0 * length * (robberSpeed + trainSpeed) / robberSpeed * nCarriages + now;
+      ll next = ne();
+      ll t = ((next - cur) * robberSpeed) / ((ll)length * (trainSpeed + robberSpeed));
+      if(t >= nCarriages) return 1.0 * length * (robberSpeed + trainSpeed) / robberSpeed * nCarriages + cur;
       nCarriages -= t;
-      now = next;
+      cur = next;
     }
-
-    return now;
+    
+    return cur;
   }
   
 // BEGIN CUT HERE

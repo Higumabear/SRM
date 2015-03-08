@@ -24,18 +24,21 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
+ll dp[60][60], take[60][60];
+
 using namespace std;
 class KMonotonic {
 public:
-  ll mc(vector<ll> s){
-    int N = s.size();
+  ll calc(vector<ll> a){
+    int N = a.size();
     vector<vector<ll>> b(N, vector<ll>(N, 0));
     vector<vector<ll>> c(N, vector<ll>(N, 0));
     vector<vector<ll>> dp(N, vector<ll>(N, 0));
+
     for(int i = 0; i < N; i++){
-      for(int j = 0; j < N; j++) b[i][j] = s[j] - j + i;
+      for(int j = 0; j < N; j++) b[i][j] = a[j] - j + i;
       sort(ALL(b[i]));
-      for(int j = 0; j < N; j++) c[i][j] = abs(b[i][j] - s[i]);
+      for(int j = 0; j < N; j++) c[i][j] = abs(b[i][j] - a[i]);
     }
     for(int i = 0; i < N; i++)
       for(int j = 0; j < N; j++)
@@ -55,30 +58,31 @@ public:
     for(int i = 0; i < N; i++) ans = min(ans, dp[N - 1][i]);
     return ans;
   }
-  int transform(vector <int> sequence, int k){
+  int transform(vector <int> sequence, int K){
     int N = sequence.size();
-    vector<vector<ll>> cost(N + 1, vector<ll>(N + 1, 0));
-    vector<vector<ll>> dp(N + 1, vector<ll>(N + 1, LLINF));
-    for(int i = 0; i <= N; i++){
-      for(int j = i + 1; j <= N; j++){
-	vector<ll> t; 
-	for(int k = i; k < j; k++) t.push_back(sequence[k]);
-	cost[i][j] = mc(t);
-	reverse(ALL(t));
-	cost[i][j] = min(cost[i][j], mc(t));
+    for(int i = 0; i < N; i++){
+      for(int j = i; j < N; j++){
+	take[i][j] = LLINF;
+	vector<ll> tmp1(sequence.begin() + i, sequence.begin() + j + 1);
+	vector<ll> tmp2(sequence.begin() + i, sequence.begin() + j + 1);
+	reverse(ALL(tmp2));
+	take[i][j] = min(take[i][j], calc(tmp1));
+	take[i][j] = min(take[i][j], calc(tmp2));
+	
+	//cout << i << " " << j << " " << take[i][j] << endl;
       }
     }
-    cout << "koko" << endl;
-    dp[0][0] = 0;
-    for(int i = 0; i <= N; i++){
-      for(int j = 0; j <= N; j++){
-	if(j == 0) continue;
-	for(int k = 0; k < i; k++)
-	  dp[i][j] = min(dp[i][j], dp[k][j - 1] + cost[k][i]);
+    
+    cout << take[0][N - 1] << endl;
+    for(int i = 0; i < 60; i++) for(int j = 0; j < 60; j++) dp[i][j] = LLINF;
+    for(int i = 0; i < N; i++) dp[i][1] = take[0][i];
+    for(int i = 0; i < N; i++){
+      for(int j = 0; j + 1 <= i; j++){
+	for(int k = 2; k <= K; k++)
+	  dp[i][k] = min(dp[i][k], dp[j][k - 1] + take[j + 1][i]);
       }
     }
-    ll ans = dp[N][k];
-    return (int)ans;
+    return dp[N - 1][K];
   }
   
 // BEGIN CUT HERE

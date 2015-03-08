@@ -24,10 +24,11 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
+using namespace std;
+
 ll s[250001];
 int A[16][1 << 16];
 
-using namespace std;
 class FloatingMedian {
 public:
   void ad(int a){
@@ -40,7 +41,7 @@ public:
     for(int i = 0; i < 16; i++){
       A[i][a]--;
       a >>= 1;
-    }    
+    }
   }
   int fi(int a){
     int j = 0;
