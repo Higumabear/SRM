@@ -81,14 +81,14 @@ int scc(){
   return k;
 }
 
+
 class AntarcticaPolice {
 public:
-  int N;
   double minAverageCost(vector <int> costs, vector <string> roads){
     V = costs.size();
     for(int i = 0; i < V; i++) G[i].clear(), rG[i].clear();
     for(int i = 0; i < V; i++)
-      for(int j = 0; j < V; j++) 
+      for(int j = 0; j < V; j++)
 	if(roads[i][j] == 'Y') add_edge(i, j);
     int k = scc(), deg[50] = {};
     bool e[50][50] = {};
@@ -98,9 +98,9 @@ public:
     for(int i = 0; i < k; i++)
       for(int j = 0; j < k; j++)
 	if(i != j && e[i][j]) deg[j]++;
-
+    
     bool use[50] = {};
-    int sum = 0, m = 0;
+    int sum = 0,  m = 0;
     for(int i = 0; i < k; i++){
       if(deg[i] != 0) continue;
       int mni = -1;
@@ -116,7 +116,7 @@ public:
     sort(ALL(v));
     for(int i = 1; i < (int)v.size(); i++) v[i] += v[i - 1];
     double ans = 1.0 * sum / m;
-    for(int i = 0; i < (int)v.size(); i++) 
+    for(int i = 0; i < (int)v.size(); i++)
       ans = min(ans, 1.0 * (sum + v[i]) / (m + i + 1));
     return ans;
   }

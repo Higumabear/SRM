@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,69 +25,80 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
+
+
 class RepeatedPatterns {
 public:
-  ll stoi(string s){
+  ll z;
+
+  ll s2i(string s){
     stringstream ss(s);
-    ll ret; ss >> ret; return ret;
+    ll x; ss >> x; return x;
+  }
+  bool in(ll idx){
+    return idx + z <= 1e16;
   }
   long long findZeroSegment(string P1, string P2, string zeroCount){
-
+    int N = P1.length(), M = P2.length();
+    ll h1 = 0, t1 = 0, h2 = 0, t2 = 0;
+    while(h1 < N && P1[h1] == '0') h1++;
+    while(h2 < M && P2[h2] == '0') h2++;
+    while(t1 < N && P1[N - 1 - t1] == '0') t1++;
+    while(t2 < M && P2[M - 1 - t2] == '0') t2++;
+    
+    z = s2i(zeroCount);
     ll ans = LLINF;
-    ll pre1 = LLINF, suf1 = LLINF, pre2 = LLINF, suf2 = LLINF; 
-    ll L1 = P1.length(), L2 = P2.length(); 
-    ll LIM = 10000000000000000LL;
-    ll zc = stoi(zeroCount);
-
-    if(L1 >= zc && 
-       P1.find(string(zc, '0')) != string::npos){
-      return P1.find(string(zc, '0'));
+    //ç≈èâÇ©ÇÁåªÇÍÇÈ
+    if(z <= h1) return ans = min(ans, 0LL);
+    //P1ì‡Ç…åªÇÍÇÈ
+    if(N >= z){
+      int idx = P1.find(string(z, '0'), 0);
+      if(string::npos != idx) ans = min(ans, (ll)idx);
     }
 
-    if(L2 >= zc && 
-       P2.find(string(zc, '0')) != string::npos){
-      ans = min(ans, 1000000LL * L1 + (ll)P2.find(string(zc, '0')));
+    //P2ì‡Ç…åªÇÍÇÈ
+    if(M >= z){
+      int idx = P2.find(string(z, '0'), 0);
+      if(string::npos != idx) ans = min(ans, 1000000LL * N + idx);
     }
-      
 
-    for(ll i = 0; i < L1; i++)
-      if(P1[i] == '1') pre1 = min(pre1, i);
-    for(ll i = L1 - 1; i >= 0; i--)
-      if(P1[i] == '1') suf1 = min(suf1, L1 - 1 - i);
-    for(ll i = 0; i < L2; i++)
-      if(P2[i] == '1') pre2 = min(pre2, i);
-    for(ll i = L2 - 1; i >= 0; i--)
-      if(P2[i] == '1') suf2 = min(suf2, L2 - 1 - i);
-    if(pre1 == LLINF) pre1 = L1;
-    if(suf1 == LLINF) suf1 = L1;
-    if(pre2 == LLINF) pre2 = L2;
-    if(suf2 == LLINF) suf2 = L2;
-    cout << pre1 << " " << suf1 << " " << pre2 << " " << suf2 << endl;
+    //P1Ç∆P1ÇÃã´ñ⁄
+    if(t1 + h1 >= z && in(N - t1)) 
+      ans = min(ans, N - t1);
+    
+    //P1Ç∆P2ÇÃã´ñ⁄
+    if(t1 + h2 >= z && in(1000000LL * N - t1))
+      ans = min(ans, 1000000LL * N - t1);
+   
+    //P2Ç∆P1ÇÃã´ñ⁄
+    if(t2 + h1 >= z && in(N * 1000000LL + M - t2)) 
+      ans = min(ans, N * 1000000LL + M - t2);
 
-    if(pre1 == L1){
-      if(pre2 == L2) return 0;
-      if(L1 * 1000000LL + pre2 >= zc) return 0;
-      if(suf2 + L1 * 1000000LL + pre2 >= zc) ans = min(ans, L1 * 1000000LL + L2 - suf2);
+    //P2Ç∆P2ÇÃã´ñ⁄
+    if(t2 + h2 >= z && in(2LL * (1000000LL * N + M) - t2)) 
+      ans = min(ans, 2LL * (1000000LL * N + M) - t2);
+
+    //P1Ç™Ç∑Ç◊Çƒ0ÇÃÇ∆Ç´
+    if(h1 == N){
+      if(t2 + 1000000LL * N + h2 >= z && in(1000000LL * N + M - t2))
+	ans = min(ans, 1000000LL * N + M - t2);
+      if(1000000LL * N + h2 >= z && in(0))
+	ans = min(ans, 0LL);
     }
-    if(pre2 == L2){
-      ll idx = (zc - suf1 - pre1 - 1) / L2;
-      dump(idx);
-      if(idx <= 1000000000LL){
-	ll val = L1 * 1000000LL * (idx + 1) + L2 * idx * (idx + 1LL) / 2LL - suf1;
-	if(val + zc <= LIM) ans = min(ans, val);
+
+    //P2Ç™Ç∑Ç◊Çƒ0ÇÃÇ∆Ç´
+    if(h2 == M){
+      if(zeroCount.length() / P2.length() * P1.length() < 17){
+	ll p = ((z - t1 - h1) % M == 0) ? 
+	  (z - t1 - h1) / M : (z - t1 - h1) / M + 1;
+	ll q = 1000000LL * N * p + p * (p - 1) / 2 * M - t1;
+	if(q < 0) q = 0;
+	if(in(q)) ans = min(ans, q);
       }
-      //return val >= LIM ? -1 : val;
     }
-    
-    if(pre1 >= zc) return 0;
-    if(pre1 + suf1 >= zc) return L1 - suf1;
-    
-    if(suf1 + pre2 >= zc) ans = min(ans, 1000000LL * L1 - suf1);
-    if(suf2 + pre1 >= zc) ans = min(ans, 1000000LL * L1 + L2 - suf2);
-    
-    if(suf2 + pre2 >= zc) ans = min(ans, 2LL * 1000000LL * L1 + 2LL * L2 - suf2); 
-    
+
+    //P1,P2Ç∑Ç◊Çƒ0ÇÃÇ∆Ç´
+    if(t1 == N && t2 == M && in(0)) ans = 0;
     return ans == LLINF ? -1 : ans;
   }
   

@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,65 +25,57 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-ll dp[60][60], take[60][60];
+ll dp1[60][60], dp2[60][60];
 
-using namespace std;
 class KMonotonic {
 public:
-  ll calc(vector<ll> a){
-    int N = a.size();
-    vector<vector<ll>> b(N, vector<ll>(N, 0));
-    vector<vector<ll>> c(N, vector<ll>(N, 0));
-    vector<vector<ll>> dp(N, vector<ll>(N, 0));
-
+  int N;
+  vector<int> s;
+  void func(vector<int> a){
     for(int i = 0; i < N; i++){
-      for(int j = 0; j < N; j++) b[i][j] = a[j] - j + i;
-      sort(ALL(b[i]));
-      for(int j = 0; j < N; j++) c[i][j] = abs(b[i][j] - a[i]);
-    }
-    for(int i = 0; i < N; i++)
-      for(int j = 0; j < N; j++)
-	dp[i][j] = (i == 0) ? c[i][j] : LLINF;
-    for(int i = 1; i < N; i++){
-      ll tmp = LLINF;
-      int j = 0;
-      for(int k = 0; k < N; k++){
-	while(j < N && b[i - 1][j] < b[i][k]){
-	  tmp = min(tmp, dp[i - 1][j]);
-	  j++;
+      s = a;
+      for(int j = i + 1; j < N; j++) 
+	if(s[j - 1] >= a[j]) s[j] = s[j - 1] + 1;
+      for(int j = i - 1; j >= 0; j--) 
+	if(s[j + 1] <= a[j]) s[j] = s[j + 1] - 1;
+
+      for(int p = 0; p < N; p++){
+	ll sum = 0;
+	for(int q = p; q < N; q++){
+	  sum += abs(s[q] - a[q]);
+	  dp1[p][q] = min(dp1[p][q], sum);
 	}
-	dp[i][k] = tmp + c[i][k];
       }
+      // for(int j = i + 1; j < N; j++) 
+      // 	dp1[i][j] = min(dp1[i][j], dp1[i][j - 1] + abs(s[j] - a[j]));
+      // for(int j = i - 1; j >= 0; j--) 
+      // 	dp1[j][i] = min(dp1[j][i], dp1[j + 1][i] + abs(s[j] - a[j]));
+      // cout << i << " ";
+      // for(int j = 0; j < N; j++) cout << s[j] << " ";
+      // cout << endl;
     }
-    ll ans = LLINF;
-    for(int i = 0; i < N; i++) ans = min(ans, dp[N - 1][i]);
-    return ans;
   }
   int transform(vector <int> sequence, int K){
-    int N = sequence.size();
-    for(int i = 0; i < N; i++){
-      for(int j = i; j < N; j++){
-	take[i][j] = LLINF;
-	vector<ll> tmp1(sequence.begin() + i, sequence.begin() + j + 1);
-	vector<ll> tmp2(sequence.begin() + i, sequence.begin() + j + 1);
-	reverse(ALL(tmp2));
-	take[i][j] = min(take[i][j], calc(tmp1));
-	take[i][j] = min(take[i][j], calc(tmp2));
-	
-	//cout << i << " " << j << " " << take[i][j] << endl;
+    N = sequence.size();
+    for(int i = 0; i < 60; i++){
+      for(int j = 0; j < 60; j++){
+	dp1[i][j] = i == j ? 0 : LLINF;
+	dp2[i][j] = LLINF;
       }
+      //dp2[i][1] = 0;
     }
-    
-    cout << take[0][N - 1] << endl;
-    for(int i = 0; i < 60; i++) for(int j = 0; j < 60; j++) dp[i][j] = LLINF;
-    for(int i = 0; i < N; i++) dp[i][1] = take[0][i];
-    for(int i = 0; i < N; i++){
-      for(int j = 0; j + 1 <= i; j++){
+
+    func(sequence);
+    reverse(ALL(sequence));
+    func(sequence);
+
+    for(int i = 0; i < N; i++) dp2[i][1] = dp1[0][i];
+    for(int i = 0; i < N; i++) 
+      for(int j = 0; j + 1 <= i; j++)
 	for(int k = 2; k <= K; k++)
-	  dp[i][k] = min(dp[i][k], dp[j][k - 1] + take[j + 1][i]);
-      }
-    }
-    return dp[N - 1][K];
+	  dp2[i][k] = min(dp2[i][k], dp2[j][k - 1] + dp1[j + 1][i]);
+    
+    return dp2[N - 1][K];
   }
   
 // BEGIN CUT HERE

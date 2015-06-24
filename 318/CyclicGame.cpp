@@ -16,40 +16,37 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
 #define LLINF 1LL << 60
-#define EPS 1e-10
+#define EPS 1e-6
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
 
-double dp[1000][15];
-vector<int> a;
 
 class CyclicGame {
 public:
-  double rec(int idx, int cur){
-    if(idx >= 1000) return 0.0;
-    if(dp[idx][cur] >= 0.0) return dp[idx][cur];
-
+  vector<int> ce;
+  double dp[15][1010];
+  double dfs(int idx, int cnt){
+    if(cnt > 1000) return 0.0;
+    if(dp[idx][cnt] >= 0.0) return dp[idx][cnt];
     double ret = 0.0;
     for(int i = 1; i <= 6; i++){
-      int next = (cur + i) % a.size();
-      int val = a[next];
-      ret += val * pow(6, -idx) + rec(idx + 1, next);
+      int next = (idx + i) % ce.size();
+      int val = ce[next];
+      ret += val * pow(6, -cnt) + dfs(next, cnt + 1);
     }
-    if(ret < 0.0) ret = 0.0;
-    return dp[idx][cur] = ret;
+    ret = max(ret, 0.0);
+    return dp[idx][cnt] = ret;
   }
-
   double estimateBank(vector <int> cells){
-    int N = cells.size();
-    a = cells;
+    ce = cells;
     memset(dp, -1, sizeof(dp));
-    return rec(1, 0);
+    return dfs(0, 1);
   }
   
 // BEGIN CUT HERE

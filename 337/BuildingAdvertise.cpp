@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,12 +25,13 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
+ll R[100001];
+
 class BuildingAdvertise {
 public:
   long long getMaxArea(vector <int> h, int n){
+    int j = 0, m = h.size();
     stack<pair<ll, ll>> R;
-    int j = 0;
 
     ll ans = 0;
     for(int i = 0; i <= n; i++){
@@ -47,8 +49,8 @@ public:
 	  R.push(make_pair(h[j], p));
 	}
       }
-      h[j] = ((h[j] ^ h[(j + 1) % h.size()]) + 13) % 835454957;
-      j = (j + 1) % h.size();
+      h[j] = ((h[j] ^ h[(j + 1) % m]) + 13) % 835454957;
+      j = (j + 1) % m;
     }
     return ans;
   }

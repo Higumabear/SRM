@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,42 +25,42 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
+
+
 class LikelyWord {
 public:
   int likely(vector <string> dictionary, int k){
     int N = dictionary.size();
     vector<ll> num;
-
     for(int i = 0; i <= N; i++){
-      string f, l;
-      if(i == 0) f = string(k, 'a');
+      string cur, next;
+      if(i == 0) cur = string(k, 'a');
       else{
-	f = dictionary[i - 1];
-	if(f.length() < k) f += string(k - f.length(), 'a');
-	else f.resize(k);
+	cur = dictionary[i - 1];
+	if(cur.length() > k) cur.resize(k);
+	else cur += string(k - cur.length(), 'a');
       }
-      if(i == N) l = string(k, 'z');
+      
+      if(i == N) next = string(k, 'z');
       else{
-	l = dictionary[i];
-	if(l.length() < k) l += string(k - l.length(), 'a');
-	else l.resize(k);
+	next = dictionary[i];
+	if(next.length() > k) next.resize(k);
+	else next += string(k - next.length(), 'a');	
       }
 
       ll cnt = 0, base = 1;
       for(int j = k - 1; j >= 0; j--){
-	cnt += base * (l[j] - f[j]);
+	cnt += base * (next[j] - cur[j]);
 	base *= 26LL;
       }
       cnt++;
-      if(i > 0 && f <= dictionary[i - 1]) cnt--;
-      if(i < N && l >= dictionary[i]) cnt--;
+      if(i > 0 && cur <= dictionary[i - 1]) cnt--;
+      if(i < N && next >= dictionary[i]) cnt--;
       if(cnt < 0) cnt = 0;
-
       num.push_back(cnt);
     }
     if(count(ALL(num), *max_element(ALL(num))) >= 2) return -1;
-    return (int)(max_element(ALL(num)) - num.begin());
+    return max_element(ALL(num)) - num.begin();
   }
   
 // BEGIN CUT HERE

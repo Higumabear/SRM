@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,27 +25,26 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-double dp[60][1200];
+double dp[1001][60][20];
 
-using namespace std;
 class TestBettingStrategy {
 public:
   double winProbability(int initSum, int goalSum, int rounds, int prob){
-    memset(dp, 0, sizeof(dp));
-    double p = prob / 100.0;
-    dp[rounds][goalSum] = 1.0;
-    for(int i = rounds - 1; i >= 0; i--){
-      dp[i][goalSum] = 1;
-      for(int j = initSum; j < goalSum; j++){
-	int need = 1;
-	for(int k = i + 1; k <= rounds && need <= j; k++){
-	  double q = pow(1 - p, k - i - 1) * p;
-	  dp[i][j] += dp[k][j + 1] * q;
-	  need = 2 * need + 1;
+    memset(dp, 0.0, sizeof(dp));
+    dp[initSum][0][0] = 1.0;
+    for(int i = 0; i <= 1000; i++){
+      for(int j = 0; j < rounds; j++){
+	for(int k = 0; k <= min(10, j); k++){
+	  if(dp[i][j][k] < -EPS) continue;
+	  dp[min(i + (1 << k), 1000)][j + 1][k + 1] = dp[i][j][k] * (100 - prob) * 0.01;
+	  dp[i][j + 1][0] = dp[i][j][k] * prob * 0.01;
 	}
       }
     }
-    return dp[0][initSum];
+    double ans = 0.0;
+    for(int i = 0; i < 60; i++)
+      for(int j = 0; j < 20; j++) ans += dp[1000][i][j];
+    return ans;
   }
   
 // BEGIN CUT HERE

@@ -1,5 +1,3 @@
-// BEGIN CUT HERE
-// END CUT HERE
 #include <sstream>
 #include <string>
 #include <vector>
@@ -21,68 +19,71 @@ typedef long long ll;
 #define INF 1 << 29
 #define LLINF 1LL << 60
 #define EPS 1e-6
+#define ABS(a) ((a) < 0 ? - (a) : (a))
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-int dx[8] = {0, 1, 1, 1, 0, -1, -1, -1};
-int dy[8] = {1, 1, 0, -1, -1, -1, 0, 1};
-
 using namespace std;
+
+int dx[8] = {0, 1, 0, -1, 1, 1, -1, -1};
+int dy[8] = {1, 0, -1, 0, 1, -1, -1, 1};
+int label[60][60];
+
 class LandAndSea {
 public:
-  vector <int> howManyIslands(vector <string> seaMap){
-    int N = seaMap.size(), M = seaMap[0].length();
-    vector<vector<int>> vis(N, vector<int>(M, 0));
+  int N, M;
+  int num;
+  vector <string> f;
+  vector<int> G[1000];
+
+  void dfs(int y, int x, char c, int num){
+    label[y][x] = num;
+    for(int i = 0; i < ((c == 'x') ? 8 : 4); i++){
+      int ny = y + dy[i], nx = x + dx[i];
+      if(0 <= ny && ny < N && 0 <= nx && nx < M && 
+	 label[ny][nx] == -1 && f[ny][nx] == c) dfs(ny, nx, c, num);
+    }
+  }
+  void cca(){
+    num = 0;
+    for(int i = 0; i < N; i++){
+      for(int j = 0; j < M; j++){
+	if(label[i][j] != -1) continue;
+	dfs(i, j, f[i][j], num++);
+      }
+    }
+  }
+  vector <int> howManyIslands(vector <string> seaMap) {
+    f.clear();
+    N = seaMap.size() + 2, M = seaMap[0].length() + 2;
+    for(int i = 0; i < N; i++){
+      if(i == 0 || i == N - 1) f.push_back(string(M, '.'));
+      else f.push_back("." + seaMap[i - 1] + ".");
+    }
+    memset(label, -1, sizeof(label));
+    cca();
     
-    int cnt = 0;
+    map<int, int> ant;
+    for(int i = 0; i < num; i++) ant[i] = INF;
     for(int i = 0; i < N; i++){
       for(int j = 0; j < M; j++){
-	if(seaMap[i][j] == '.' || vis[i][j] > 0) continue;
-	cnt++;
-	queue<pair<int, int>> Q;
-	Q.push(make_pair(i, j));
-	vis[i][j] = cnt;
-	while(!Q.empty()){
-	  int y = Q.front().first, x = Q.front().second;
-	  Q.pop();
-	  for(int k = 0; k < 8; k++){
-	    int ny = y + dy[k], nx = x + dx[k];
-	    if(0 <= nx && nx < M && 0 <= ny && ny < N && 
-	       seaMap[ny][nx] == 'x' && vis[ny][nx] == 0){
-	      Q.push(make_pair(ny, nx));
-	      vis[ny][nx] = cnt;
-	    }
-	  }
+	for(int k = 0; k < 4; k++){
+	  int ny = i + dy[k], nx = j + dx[k];
+	  if(0 <= ny && ny < N && 0 <= nx && nx < M)
+	    ant[label[i][j]] = min(ant[label[i][j]], label[ny][nx]);
 	}
+	cout << label[i][j];
       }
-    }
-    vector<bool> f(cnt + 1, false);
-    vector<int> g[cnt];
-    for(int i = 0; i < N; i++){
-      for(int j = 0; j < M; j++){
-	if(vis[i][j] == 0 || f[vis[i][j]]) continue;
-	int label = vis[i][j];
-	f[label] = true;
-	queue<pair<int, int>> Q;
-	Q.push(make_pair(i, j));
-	int parent = -1;
-	while(!Q.empty()){
-	  int y = Q.front().first, x = Q.front().second;
-	  Q.pop();
-	  for(int k = 0; k < 8; k += 2){
-	    int ny = y + dy[k], nx = x + dx[k];
-	    if(!(0 <= nx && nx < M && 0 <= ny && ny < N)) goto L1;
-	    if(vis[i][j] == 0 || vis[i][j] == label) 
-	      Q.push(make_pair(ny, nx));
-	    else
-	      parent = vis[i][j];
-	  }
-	}
-
-      L1:;
-      }
+      cout << endl;
     }
 
+    for(int i = 0; i < num; i++)
+      if(i != ant[i]) G[ant[i]].push_back(i);
+    for(int i = 0; i < num; i++){
+      cout << i << " : ";
+      for(int j = 0; j < (int)G[i].size(); j++) cout << G[i][j] << " ";
+      cout << endl;
+    }
     return vector<int>();
   }
   
@@ -126,11 +127,12 @@ public:
 }; vector <string> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); int Arr1[] = {1, 1 }; vector <int> Arg1(Arr1, Arr1 + (sizeof(Arr1) / sizeof(Arr1[0]))); verify_case(4, Arg1, howManyIslands(Arg0)); }
 
 // END CUT HERE
-
+  
 };
-// BEGIN CUT HERE
+
+// BEGIN CUT HERE 
 int main() {
-LandAndSea ___test;
-___test.run_test(-1);
+  LandAndSea ___test;
+  ___test.run_test(-1); 
 }
-// END CUT HERE 
+// END CUT HERE

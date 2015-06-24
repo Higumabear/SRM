@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,21 +25,20 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
+
+
 class CollectingPayment {
 public:
   double maximumProfit(vector <int> earning, vector <int> moment, int fee, int rate){
     int N = earning.size();
-    vector<int> e(N + 1, 0);
-    vector<double> dp(N + 1, 0.0);
+    vector<double> dp(N + 1, 0), e(N + 1, 0);
     for(int i = 1; i <= N; i++) e[i] = e[i - 1] + earning[i - 1];
-
-    for(int i = 0; i < N + 1; i++){
+    for(int i = 0; i <= N; i++){
       for(int j = 0; j < i; j++){
 	dp[i] = max(dp[i], dp[j]);
 	int money = e[i] - e[j] - fee;
-	if(money < 0) continue;
-	dp[i] = max(dp[i], dp[j] + money * pow(1.0 + rate / 1000.0, (365 - moment[i - 1]) / 7 + 1));
+	dp[i] = max(dp[i], dp[j] + money * pow(1.0 + rate / 1000.0,
+					       (365 - moment[i - 1]) / 7 + 1));
       }
     }
     return dp[N];

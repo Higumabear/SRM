@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,46 +25,27 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
-
-ll s[250001];
-int A[16][1 << 16];
+ll T[250010];
 
 class FloatingMedian {
 public:
-  void ad(int a){
-    for(int i = 0; i < 16; i++){
-      A[i][a]++;
-      a >>= 1;
-    }
-  }
-  void de(int a){
-    for(int i = 0; i < 16; i++){
-      A[i][a]--;
-      a >>= 1;
-    }
-  }
-  int fi(int a){
-    int j = 0;
-    for(int i = 15; i >= 0; i--){
-      j <<= 1;
-      if(A[i][j] < a){
-	a -= A[i][j];
-	j++;
-      }
-    }
-    return j;
-  }
   long long sumOfMedians(int seed, int mul, int add, int N, int K){
-    s[0] = seed;
-    for(int i = 1; i < N; i++) s[i] = (s[i - 1] * mul + add) % 65536;
-    memset(A, 0, sizeof(A));
-    for(int i = 0; i < K; i++) ad(s[i]);
-    ll ans = fi((K + 1) / 2);
+    T[0] = seed;
+    for(int i = 1; i < N; i++)
+      T[i] = (T[i - 1] * mul + add) % 65536;
+    
+    set<pair<ll, int>> s;
+    for(int i = 0; i < K; i++) s.insert(make_pair(T[i], i));
+    auto it = s.begin();
+    advance(it, (K - 1) / 2);
+
+    ll ans = it->first;
     for(int i = K; i < N; i++){
-      de(s[i - K]);
-      ad(s[i]);
-      ans += fi((K + 1) / 2);
+      s.insert(make_pair(T[i], i));
+      if(make_pair(T[i], i) <= *it) it--;
+      if(make_pair(T[i - K], i - K) <= *it) it++;
+      s.erase(make_pair(T[i - K], i - K));
+      ans += it->first;
     }
     return ans;
   }

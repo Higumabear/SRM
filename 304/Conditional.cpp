@@ -16,37 +16,41 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
 #define LLINF 1LL << 60
-#define EPS 1e-6
+#define EPS 1e-10
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-double dp[60][3600][2];
+double dp[51][51 * 51][2];
 
-using namespace std;
 class Conditional {
 public:
   double probability(int nDice, int maxSide, int v, int theSum){
     memset(dp, 0, sizeof(dp));
     dp[0][0][0] = 1.0;
-    for(int i = 1; i <= nDice; i++){
-      for(int j = 0; j <= theSum; j++){
-	for(int k = 1; k <= maxSide; k++){
-	  if(k == v){
-	    dp[i][min(j + k, theSum)][1] += (dp[i - 1][j][1] + dp[i - 1][j][0]) / maxSide;
-	  }else{
-	    dp[i][min(j + k, theSum)][1] += dp[i - 1][j][1] / maxSide;
-	    dp[i][min(j + k, theSum)][0] += dp[i - 1][j][0] / maxSide;
+    for(int i = 0; i < nDice; i++){
+      for(int k = 0; k <= nDice * maxSide; k++){
+	for(int j = 1; j <= maxSide; j++){
+	  if(j == v)
+	    dp[i + 1][k + v][1] += (dp[i][k][1] + dp[i][k][0]) * 1.0 / maxSide;
+	  else{
+	    dp[i + 1][k + j][1] += dp[i][k][1] * 1.0 / maxSide;
+	    dp[i + 1][k + j][0] += dp[i][k][0] * 1.0 / maxSide;
 	  }
 	}
       }
     }
-    double sum = 0.0;
-    for(int i = 0; i <= theSum; i++) sum += dp[nDice][i][1];
-    return dp[nDice][theSum][1] / sum;
+    double ans = 0.0, sum = 0.0;
+    for(int k = 0; k <= nDice * maxSide; k++){
+      sum += dp[nDice][k][1];
+      if(k >= theSum)
+	ans += dp[nDice][k][1];
+    }
+    return ans / sum;
   }
   
 // BEGIN CUT HERE

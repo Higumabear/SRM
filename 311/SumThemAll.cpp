@@ -25,23 +25,41 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-ll a[20];
+
 
 class SumThemAll {
 public:
-  ll sum(ll n){
-    if(n < 10) return n;
-    return sum(n / 10) + n % 10;
-  }
-  ll cnt(ll n){
-    if(n < 10) return n * (n + 1) / 2;
-    if(n % 10 == 9) return cnt(n / 10) * 10 + (n / 10 + 1) * 45;
-    return cnt(n + 1) - sum(n + 1);
+  ll dp[10][11];
+  ll f(int x){
+    vector<int> d;
+    while(x){
+      d.push_back(x % 10);
+      x /= 10;
+    }
+    reverse(ALL(d));
+    ll b = 1;
+    for(int i = 1; i < d.size(); i++) b *= 10LL;
+
+    ll ret = 0;
+    int y = 0;
+    for(int j = 0; j < d.size(); j++){
+      for(int i = 0; i < d[j]; i++) ret += dp[i][d.size() - j] + y * b;
+      y += d[j];
+      b /= 10;
+    }
+    return ret;
   }
   long long getSum(int lowerBound, int upperBound){
-    if(lowerBound == 0) lowerBound = 1;
-    return cnt(upperBound) - cnt(lowerBound - 1);
-  }  
+    memset(dp, 0, sizeof(dp));
+    ll k = 1;
+    for(int j = 1; j < 11; j++){
+      for(int i = 0; i < 10; i++) dp[0][j] += dp[i][j - 1];
+      for(int i = 0; i < 10; i++) dp[i][j] = dp[0][j] + k * i;
+      k *= 10;
+    }
+    return f(upperBound + 1) - f(lowerBound);
+  }
+  
 // BEGIN CUT HERE
 	public:
 	void run_test(int Case) { if ((Case == -1) || (Case == 0)) test_case_0(); if ((Case == -1) || (Case == 1)) test_case_1(); if ((Case == -1) || (Case == 2)) test_case_2(); if ((Case == -1) || (Case == 3)) test_case_3(); if ((Case == -1) || (Case == 4)) test_case_4(); }

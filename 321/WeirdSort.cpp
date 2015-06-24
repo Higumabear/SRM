@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,30 +25,22 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
+
+
 class WeirdSort {
 public:
   vector <int> sortArray(vector <int> data){
-    int N = data.size();
     sort(ALL(data));
-    
-    vector<int> ans; ans.push_back(INF);
-    for(int i = 0; i < N; i++){
-      int j;
-      for(j = 0; j < data.size() - 1; j++){
-	int M = data[j];
-	if(M == ans[i] + 1) continue;
-
-	bool b = true;
-	for(int k = 0; k < data.size(); k++)
-	  if(data[k] != M && data[k] != M + 1) b = false;
-	if(b) continue;
-	else break;
+    vector<int> ans;
+    do{
+      for(auto it = data.begin(); it != data.end(); it++){
+	if(ans.size() && (ans.back() + 1 == *it)) continue;
+	if(data.front() == *it && (*it + 1 == data.back())) continue;
+	ans.push_back(*it);
+	data.erase(it);
+	break;
       }
-      ans.push_back(data[j]);
-      data.erase(data.begin() + j);
-    }
-    ans.erase(ans.begin());
+    }while(data.size());
     return ans;
   }
   

@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -23,18 +24,28 @@ typedef long long ll;
 #define EPS 1e-6
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
-#define PIE 3.1415926535897
 
-using namespace std;
+
+
 class Survived {
 public:
   double minTime(int x, int y, int V, int U){
-    if(!x && !y) return 0.0;
-    double c = x * x + y * y;
-    double b = x * U, a = U * U - V * V, d = b * b - a * c;
-    if(d < 0) return -1.0;
-    if(a >= 0 && b <= 0) return -1.0;
-    return c / (b + sqrt(d));
+    int A = U * U - V * V, B = -2 * U * x, C = x * x + y * y;
+    cout << A << " " << B << " " << C << endl;
+    if(A < 0) A *= -1, B *= -1, C *= -1;
+    if(A == 0){
+      if(B == 0) return C == 0 ? 0 : -1;
+      else return (B * C <= 0) ? -C * 1.0 / B : -1;
+    }else{
+      int D = B * B - 4 * A * C;
+      if(D < 0) return -1;
+      
+      double t1 = (-B + sqrt(D)) * 0.5 / A;
+      double t2 = (-B - sqrt(D)) * 0.5 / A;
+      if(t2 >= 0.0) return t2;
+      if(t1 >= 0.0) return t1;
+      return -1;
+    }
   }
   
 // BEGIN CUT HERE
