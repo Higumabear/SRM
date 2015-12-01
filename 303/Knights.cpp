@@ -24,38 +24,82 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-int dx[8] = {1, 2, 2, 1, -1, -2, -2, -1};
-int dy[8] = {2, 1, -1, -2, -2, -1, 1, 2};
-
 using namespace std;
+
+int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+
+int V; // 頂点数
+const int MAX_V = 2000;
+vector<int> G[MAX_V]; // グラフのリンクリスト表現
+int match[MAX_V]; // マッチングのペア
+bool used[MAX_V]; // DFSですでに調べたかのフラグ
+
+ // uとvをつなぐ
+void add_edge(int u, int v){
+  G[u].push_back(v);
+  //G[v].push_back(u);
+}
+
+// 増加パスをDFSで探す
+bool dfs(int v){
+  used[v] = true;
+  for(int i = 0; i < G[v].size(); i++){
+    int u = G[v][i], w =  match[u];
+    if(w < 0 || !used[w] && dfs(w)){
+      match[v] = u;
+      match[u] = v;
+      return true;
+    }
+  }
+  return false;
+}
+
+// 二部グラフの最大マッチングを求める
+int bipartite_matching(){
+  int res = 0;
+  memset(match, -1, sizeof(match));
+  for(int v = 0; v < V; v++){
+    if(match[v] < 0){
+      memset(used, 0, sizeof(used));
+      if(dfs(v)){
+        res++;
+      }
+    }
+  }
+  return res;
+}
 class Knights {
 public:
-  pair<int, int> p(string s){
-    return make_pair(s[0] - 'A', s[1] - '1');
+  int s2i(string s){
+    stringstream ss(s);
+    int x; ss >> x; return x;
   }
   int makeFriendly(int N, vector <string> pos){
-    vector<pair<int, int>> loc;
-    stringstream s(accumulate(ALL(pos), string("")));
-    string tmp; while(s >> tmp) loc.push_back(p(tmp));
+    vector<vector<bool>> f(N, vector<bool>(N, false));
+    V = N * N;
+    for(int i = 0; i < MAX_V; i++) G[i].clear();
 
-    vector<int> d(loc.size(), 0);
-    vector<pair<int, int>> node(loc.size());
-    for(int i = 0; i < (int)loc.size(); i++){
-      for(int j = 0; j < 8; j++){
-	pair<int, int> t(loc[i].first + dy[j], loc[i].second + dx[j]);
-	if(count(ALL(loc), t)){
-	  d[i]++;
-	  node.push_back(t);
+    for(int i = 0; i < (int)pos.size(); i++){
+      stringstream ss(pos[i]);
+      string t;
+      while(ss >> t){
+	int x = s2i(t.substr(1)) - 1;
+	int y = t[0] - 'A';
+	f[y][x] = true;
+      }
+    }
+    for(int y = 0; y < N; y++){
+      for(int x = 0; x < N; x++){
+	if(!f[y][x]) continue;
+	for(int j = 0; j < 8; j++){
+	  int ny = y + dy[j], nx = x + dx[j];
+	  if(0 <= ny && ny < N && 0 <= nx && nx < N && f[ny][nx])
+	    add_edge(y * N + x, ny * N + nx);
 	}
       }
     }
-    
-    vector<bool> used(d.size(), false);
-    for(int i = 0; i < d.size(); i++){
-      int idx = -1, mv = 0;
-      for()
-    }
-    return 0;
+    return bipartite_matching();
   }
   
 // BEGIN CUT HERE

@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -23,53 +24,58 @@ typedef long long ll;
 #define EPS 1e-6
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
-using namespace std;
 
-int dy[4] = {1, 0, -1, 0};
-int dx[4] = {0, 1, 0, -1};
-const int MAX = 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9;
+const int FAC = 362880;
+
+int N, M;
+int dx[4] = {1, 0, -1, 0};
+int dy[4] = {0, -1, 0, 1};
 
 class ExpensiveTravel {
 public:
+  bool in(int y, int x){
+    return 0 <= y && y < N && 0 <= x && x < M;
+  }
   int minTime(vector <string> m, int startRow, int startCol, int endRow, int endCol){
-    int N = m.size(), M = m[0].length();
-    int A[60][60], visited[60][60];
+    startRow--; startCol--; endRow--; endCol--;
+    N = m.size(), M = m[0].length();
+    int f[60][60], vis[60][60];
     pair<int, int> memo[60][60];
-    for(int i = 0; i < N; i++) {
+    
+    for(int i = 0; i < N; i++){
       for(int j = 0; j < M; j++){
-	A[i][j] = MAX / (m[i][j] - '0');
+	f[i][j] = FAC / (m[i][j] - '0');
 	memo[i][j] = make_pair(INF, 0);
       }
     }
-    int y = startRow - 1, x = startCol - 1;
-    memo[y][x] = make_pair(0, A[y][x]);
-    memset(visited, 0, sizeof(visited));
-    
+    memo[startRow][startCol] = make_pair(0, f[startRow][startCol]);
+    memset(vis, 0, sizeof(vis));
+
     while(1){
-      y = -1, x = -1;
+      int y = -1, x = -1;
 
       int i, j;
       for(i = 0; i < N; i++) 
 	for(j = 0; j < M; j++)
-	  if(visited[i][j] == 0 && (y == -1 || memo[y][x] > memo[i][j])) y = i, x = j;
+	  if(vis[i][j] == 0 && 
+	     (y == -1 || memo[y][x] > memo[i][j])) y = i, x = j;
       
       if(y == -1 || memo[i][j].first == INF) break;
-
-      visited[y][x] = 1;
+      
+      vis[y][x] = 1;
       for(int i = 0; i < 4; i++){
-	int ny = y + dy[i];
-	int nx = x + dx[i];
-	if(!(0 <= ny && ny < N && 0 <= nx && nx < M)) continue;
-	if(memo[y][x].second + A[ny][nx] <= MAX)
-	  memo[ny][nx] = min(memo[ny][nx], make_pair(memo[y][x].first, 
-						     memo[y][x].second + A[ny][nx]));
-	if(A[y][x] + A[ny][nx] <= MAX)
-	  memo[ny][nx] = min(memo[ny][nx], make_pair(memo[y][x].first + 1, 
-						     A[y][x] + A[ny][nx]));
+	int ny = y + dy[i], nx = x + dx[i];
+	if(!in(ny, nx)) continue;
+	if(memo[y][x].second + f[ny][nx] <= FAC)
+	  memo[ny][nx] = min(memo[ny][nx], make_pair(memo[y][x].first,
+						     memo[y][x].second + f[ny][nx]));
+	if(f[y][x] + f[ny][nx] <= FAC)
+	  memo[ny][nx] = min(memo[ny][nx], make_pair(memo[y][x].first + 1,
+						     f[y][x] + f[ny][nx]));
       }
     }
-    if(memo[endRow - 1][endCol - 1].first == INF) return -1;
-    return memo[endRow - 1][endCol - 1].first + 1;
+    if(memo[endRow][endCol].first == INF) return -1;
+    return memo[endRow][endCol].first + 1;
   }
   
 // BEGIN CUT HERE

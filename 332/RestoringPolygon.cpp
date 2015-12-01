@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -24,30 +25,28 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-using namespace std;
 class RestoringPolygon {
 public:
+  int N;
   int restore(vector <int> x1, vector <int> x2, vector <int> y){
-    int N = x1.size();
-    for(int i = 0; i < N; i++) 
-      if(x1[i] > x2[i]) swap(x1[i], x2[i]);
-
+    N = x1.size();
+    for(int i = 0; i < N; i++) if(x1[i] > x2[i]) swap(x1[i], x2[i]);
     int ans = 0;
     for(int S = 0; S < 1 << N; S++){
-      map<int, vector<int>> coor;
+      map<int, vector<int>> cor;
       int e = 0;
-      for(int i = 0; i < N; i++){
+      for(int i =0; i < N; i++){
 	if(S >> i & 1){
 	  e++;
-	  coor[x1[i]].push_back(y[i]), coor[x2[i]].push_back(y[i]);
+	  cor[x1[i]].push_back(y[i]);
+	  cor[x2[i]].push_back(y[i]);
 	}
       }
-      
       int p = 0;
-      for(auto u : coor) p += u.second.size() % 2;
+      for(auto u : cor) p += u.second.size() % 2;
       if(!p){
 	int sx, sy, px, py;
-	for(auto &u : coor){
+	for(auto &u : cor){
 	  sort(ALL(u.second));
 	  sx = u.first, sy = u.second[0];
 	}
@@ -55,22 +54,22 @@ public:
 	int c = 0;
 	while(1){
 	  c++;
-	  for(int j = 0; j < (int)coor[px].size(); j++){
-	    if(py == coor[px][j]){
-	      int ny = coor[px][j % 2 ? j - 1 : j + 1];
+	  for(int j = 0; j < (int)cor[px].size(); j++){
+	    if(py == cor[px][j]){
+	      int ny = cor[px][j % 2 ? j - 1 : j + 1];
 	      for(int k = 0; k < N; k++)
 		if((S >> k & 1) && x1[k] < px && px < x2[k]
-		   && min(ny, py) < y[k] && y[k] < max(ny, py))
-		  c = -1000;
+		   && min(ny, py) < y[k] && y[k] < max(ny, py)) c -= 1000;
 	      py = ny;
 	      break;
 	    }
 	  }
-	  for(int j = 0; j < N; j++)
+	  for(int j = 0; j < N; j++){
 	    if(y[j] == py && (x1[j] == px || x2[j] == px)){
 	      px = (x1[j] == px) ? x2[j] : x1[j];
 	      break;
 	    }
+	  }
 	  if(sx == px && sy == py) break;
 	}
 	if(c == e) ans = max(ans, e * 2);

@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <numeric>
+using namespace std;
 
 typedef long long ll;
 #define INF 1 << 29
@@ -23,43 +24,47 @@ typedef long long ll;
 #define EPS 1e-6
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
-using namespace std;
+
+const int MOD = 1000000007;
 
 int N;
-vector<string> res;
 string s;
+vector<string> word;
 ll memo[31][31][51][51];
-const ll MOD = 1000000007LL;
 
 class ReverseResources {
 public:
-  ll rec(int lo, int hi, int id, int start){
-    ll &ret = memo[lo][hi][id][start];
+  ll rec(int a, int b, int w, int pos){
+    if(a == b) return pos >= word[w].size() ? 1 : 0;
+    if(pos >= word[w].size()) return 0;
+
+    ll &ret = memo[a][b][w][pos];
     if(ret != -1) return ret;
-    if(lo > hi) return ret = 0;
-    if(id == N){
-      ret = 0;
-      for(int i = 0; i < N; i++) ret = (ret + rec(lo, hi, i, 0)) % MOD;
-      return ret;
+    ret = 0;
+    if(word[w][pos] == s[a]) ret += rec(a + 1, b, w, pos + 1);
+    else if(word[w][pos] == '?'){
+      for(int i = a + 1; i < b + (pos + 1 >= word[w].size() ? 1 : 0); i++){
+	ll last = rec(i, b, w, pos + 1);
+	if(last > 0)
+	  for(int j = 0; j < N; j++) ret += rec(a, i, j, 0) * last % MOD;
+      }
     }
-    if(res[id][start] == '%'){
-      if(start + 2 == (int)res[id].length()) return ret = rec(lo, hi, N, 0);
-      ret = 0;
-      for(int fin = lo; fin < hi; fin++)
-	ret = (ret + rec(lo, fin, N, 0) * 
-	       rec(fin + 1, hi, id, start + 2)) % MOD;
-      return ret;
-    }
-    if(s[lo] != res[id][start]) return ret = 0;
-    return ret = (lo == hi && start + 1 == res[id].length()) ? 
-      1 : rec(lo + 1, hi, id, start + 1);
+    ret %= MOD;
+    return ret;
   }
   int findDecompositions(string str, vector <string> resources){
-    s = str;
-    res = resources;
     N = resources.size();
+    word = resources;
+    s = str;
+    for(int i = 0; i < N; i++)
+      while(word[i].find("%s") != -1)
+	word[i].replace(word[i].find("%s"), 2, "?");
+    
     memset(memo, -1, sizeof(memo));
-    return rec(0, str.length() - 1, N, 0);
+    ll ret = 0;
+    for(int i = 0; i < N; i++) ret += rec(0, s.length(), i, 0);
+    ret %= MOD;
+    return ret;
   }
   
 // BEGIN CUT HERE

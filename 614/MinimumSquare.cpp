@@ -27,31 +27,28 @@ typedef long long ll;
 using namespace std;
 class MinimumSquare {
 public:
-  ll labs(ll a){ return a > 0 ? a : -a;}
+  ll sq(ll a){return a * a;}
   long long minArea(vector <int> x, vector <int> y, int K){
     int N = x.size();
     ll ans = LLINF;
+    cout << ans << endl;
     for(int i = 0; i < N; i++){
       for(int j = 0; j < N; j++){
-	int y1 = y[i] - 1;
-	int y2 = y[j] + 1;
-
-	vector<int> t;
-	for(int k = 0; k < N; k++)
-	  if(y1 < y[k] && y[k] < y2) t.push_back(x[k]);
+	vector<ll> t;
+	ll l = x[i] - 1, r = x[j] + 1;
+	for(int a = 0; a < N; a++)
+	  if(l < x[a] && x[a] < r) t.push_back(y[a]);
 	
 	sort(ALL(t));
-	for(int k = 0; k <= (int)t.size() - K; k++){
-	  ll sz = max(y2 - y1, t[k + K - 1] - t[k] + 2);
-	  ans = min(ans, (ll)sz * sz);
-	}
+	for(int a = 0; a + K - 1 < (int)t.size(); a++)
+	  ans = min(ans, sq(max(r - l, t[a + K - 1] - t[a] + 2LL)));
       }
     }
     return ans;
   }
   
 // BEGIN CUT HERE
-	public: 
+	public:
 	void run_test(int Case) { if ((Case == -1) || (Case == 0)) test_case_0(); if ((Case == -1) || (Case == 1)) test_case_1(); if ((Case == -1) || (Case == 2)) test_case_2(); if ((Case == -1) || (Case == 3)) test_case_3(); if ((Case == -1) || (Case == 4)) test_case_4(); }
 	private:
 	template <typename T> string print_array(const vector<T> &V) { ostringstream os; os << "{ "; for (typename vector<T>::const_iterator iter = V.begin(); iter != V.end(); ++iter) os << '\"' << *iter << "\","; os << " }"; return os.str(); }

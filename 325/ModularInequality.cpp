@@ -25,13 +25,43 @@ typedef long long ll;
 #define ALL(c) (c).begin(), (c).end()
 #define dump(x)  cerr << #x << " = " << (x) << endl;
 
-
+vector<int> S;
+int PP;
 
 class ModularInequality {
 public:
+  ll labs(ll x){
+    return x > 0LL ? x : -x;
+  }
+
+  bool isok(int p){
+    ll ans = 0;
+    for(int i = 0; i < (int)S.size(); i++) ans += labs(S[i] - p);
+    return ans <= PP;
+  }
+
+  ll bs(ll ub, ll lb){
+    ll mid;
+    while(labs(ub - lb) > 1){
+      mid = (ub + lb) / 2;
+      if(isok(mid)) lb = mid;
+      else ub = mid;
+    }
+    return lb;
+  }
+
   int countSolutions(vector <int> A, int P){
+    sort(ALL(A));
+    S = A;
+    PP = P;
+
+    ll center = A[A.size() / 2];
+    if(!isok(center)) return 0;
     
-    return ;
+    int right = bs(LLINF, center);
+    int left  = bs(-LLINF, center);
+
+    return right - left + 1;
   }
   
 // BEGIN CUT HERE
